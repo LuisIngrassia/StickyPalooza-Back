@@ -1,4 +1,4 @@
-package com.stickypalooza.server;
+package com.g12.tpo.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.stickypalooza.server;
+package com.g12.tpo.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
