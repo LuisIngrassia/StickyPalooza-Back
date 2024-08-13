@@ -13,16 +13,16 @@ public class CategoryRepository {
         Category.builder().description("Musica").id(3).build())
         );
 
-        public ArrayList<Category> getCategories() {
-            return this.categories;
-        }
+    public ArrayList<Category> getCategories() {
+        return this.categories;
+    }
 
-        public Category getCategoryById(int categoryId) {
-            return null;
-        }
+    public Category getCategoryById(int categoryId) {
+        return null;
+    }
 
-        public String createCategory(String entity) {
-            return null;
-        }
+    public String createCategory(String entity) {
+        return null;
+    }
     
 }
