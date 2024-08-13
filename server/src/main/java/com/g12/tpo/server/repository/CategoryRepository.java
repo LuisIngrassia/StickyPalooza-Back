@@ -2,7 +2,8 @@ package com.g12.tpo.server.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale.Category;
+
+import com.g12.tpo.server.entity.Category;
 
 
 public class CategoryRepository {
