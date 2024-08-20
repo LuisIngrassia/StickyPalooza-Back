@@ -1,5 +1,6 @@
 package com.g12.tpo.server.entity;
 
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
