@@ -1,28 +1,19 @@
 package com.g12.tpo.server.repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.g12.tpo.server.entity.Category;
 
 
-public class CategoryRepository {
-    public ArrayList<Category> categories = new ArrayList<Category>(
-        Arrays.asList(Category.builder().description("Series").id(1).build(),
-        Category.builder().description("Peliculas").id(2).build(),
-        Category.builder().description("Musica").id(3).build())
-        );
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    public ArrayList<Category> getCategories() {
-        return this.categories;
-    }
-
-    public Category getCategoryById(int categoryId) {
-        return null;
-    }
-
-    public String createCategory(String entity) {
-        return null;
-    }
-    
+    @Query(value = "select c from Category c where c.description = ?1")
+    List<Category> findByDescription(String description);
 }
+    
+

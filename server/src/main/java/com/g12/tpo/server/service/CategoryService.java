@@ -1,24 +1,18 @@
 package com.g12.tpo.server.service;
 
-import java.util.ArrayList;
+import java.util.Optional;
 
-import com.g12.tpo.server.repository.CategoryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 import com.g12.tpo.server.entity.Category;
+import com.g12.tpo.server.exceptions.CategoryDuplicateException;
 
-public class CategoryService {
-    
-    public ArrayList<Category> getCategories() {
-        CategoryRepository categoryRepository = new CategoryRepository();
-        return categoryRepository.getCategories();
-    }
 
-    public Category getCategoryById(int categoryId) {
-        CategoryRepository categoryRepository = new CategoryRepository();
-        return categoryRepository.getCategoryById(categoryId);
-    }
+public interface CategoryService {
+    public Page<Category> getCategories(PageRequest pageRequest);
 
-    public String createCategory(String entity) {
-        CategoryRepository categoryRepository = new CategoryRepository();
-        return categoryRepository.createCategory(entity);
-    }
+    public Optional<Category> getCategoryById(Long categoryId);
+
+    public Category createCategory(String description) throws CategoryDuplicateException;
 }
