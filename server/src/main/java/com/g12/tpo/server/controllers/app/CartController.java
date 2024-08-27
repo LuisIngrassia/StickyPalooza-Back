@@ -1,4 +1,4 @@
-package com.g12.tpo.server.controllers;
+package com.g12.tpo.server.controllers.app;
 
 import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.service.CartService;
