@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.g12.tpo.server.entity.Role;
 import com.g12.tpo.server.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    
         private final AuthService service;
     
-        @PostMapping("/register")
-        public ResponseEntity<AuthResponse> register(
+
+        @PostMapping("/register/user")
+        public ResponseEntity<AuthResponse> registerUser(
                 @RequestBody RegisterRequest request) {
+            request.setRole(Role.USER);
+            return ResponseEntity.ok(service.register(request));
+        }
+    
+        @PostMapping("/register/admin")
+        public ResponseEntity<AuthResponse> registerAdmin(
+                @RequestBody RegisterRequest request) {
+            request.setRole(Role.ADMIN);
             return ResponseEntity.ok(service.register(request));
         }
     

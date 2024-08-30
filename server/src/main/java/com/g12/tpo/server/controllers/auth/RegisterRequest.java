@@ -17,5 +17,8 @@ public class RegisterRequest {
     private String lastname;
     private String email;
     private String password;
+
+    // Lo cambie por una funcion de registro especifica para ADMIN y otra para USER, se puede bindear la creacion de ADMIN unicamente a ciertos IPS pero 
+    // preferible preguntarle a la profe antes.
     private Role role;
 }
