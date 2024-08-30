@@ -66,6 +66,6 @@ public class AuthService {
         
                 String token = jwtService.generateToken(user); // Generate JWT token
                 return new AuthResponse(token);
-            }
+        }
 
 }

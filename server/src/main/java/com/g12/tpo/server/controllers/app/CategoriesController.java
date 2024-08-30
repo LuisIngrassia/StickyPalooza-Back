@@ -27,7 +27,7 @@ public class CategoriesController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<Page<Category>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {

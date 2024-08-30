@@ -38,4 +38,4 @@ public class AuthController {
                 @RequestBody AuthRequest request) {
             return ResponseEntity.ok(service.authenticate(request));
         }
-    }
+}
