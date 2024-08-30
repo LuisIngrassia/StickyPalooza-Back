@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.g12.tpo.server.entity.Category;
 
-
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 

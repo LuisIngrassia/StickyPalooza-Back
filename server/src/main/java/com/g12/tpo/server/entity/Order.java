@@ -23,6 +23,6 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private Set<Product> products;
+    // @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    // private Set<Product> products;
 }

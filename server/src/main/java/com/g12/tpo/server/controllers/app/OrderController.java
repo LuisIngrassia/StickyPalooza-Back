@@ -65,9 +65,9 @@ public class OrderController {
         dto.setOrderDate(order.getOrderDate());
         dto.setTotalPrice(order.getTotalPrice());
         dto.setUserId(order.getUser() != null ? order.getUser().getId() : null);
-        dto.setProductIds(order.getProducts().stream()
-                               .map(Product::getId)
-                               .collect(Collectors.toSet()));
+        // dto.setProductIds(order.getProducts().stream()
+        //                        .map(Product::getId)
+        //                        .collect(Collectors.toSet()));
         return dto;
     }
 

@@ -29,7 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(String description) throws CategoryDuplicateException {
         List<Category> categories = categoryRepository.findByDescription(description);
         if (categories.isEmpty()) {
-            return categoryRepository.save(new Category(description));
+            var category = Category.builder().description(description).build();
+            return categoryRepository.save(category);
         }
         throw new CategoryDuplicateException();
     }

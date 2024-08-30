@@ -28,40 +28,29 @@ public class CategoriesController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDTO>> getCategories(
+    public ResponseEntity<Page<Category>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        Page<Category> categoryPage;
-        if (page == null || size == null) {
-            categoryPage = categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE));
-        } else {
-            categoryPage = categoryService.getCategories(PageRequest.of(page, size));
-        }
-        Page<CategoryDTO> categoryDTOPage = categoryPage.map(this::convertToDTO);
-        return ResponseEntity.ok(categoryDTOPage);
+        if (page == null || size == null)
+            return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)));
+        return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long categoryId) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
         Optional<Category> result = categoryService.getCategoryById(categoryId);
-        if (result.isPresent()) {
-            return ResponseEntity.ok(convertToDTO(result.get()));
-        }
+        if (result.isPresent())
+            return ResponseEntity.ok(result.get());
+
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO)
+    public ResponseEntity<Object> createCategory(@RequestBody CategoryDTO categoryRequest)
             throws CategoryDuplicateException {
-        Category result = categoryService.createCategory(categoryDTO.getDescription());
-        return ResponseEntity.created(URI.create("/categories/" + result.getId()))
-                             .body(convertToDTO(result));
+        Category result = categoryService.createCategory(categoryRequest.getDescription());
+        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
+    
 
-    private CategoryDTO convertToDTO(Category category) {
-        CategoryDTO dto = new CategoryDTO();
-        dto.setId(category.getId());
-        dto.setDescription(category.getDescription());
-        return dto;
-    }
 }

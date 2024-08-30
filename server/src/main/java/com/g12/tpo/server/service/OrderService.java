@@ -31,8 +31,8 @@ public class OrderService {
         Order order = getOrderById(id).orElseThrow(() -> new RuntimeException("Order not found"));
         order.setOrderDate(orderDetails.getOrderDate());
         order.setTotalPrice(orderDetails.getTotalPrice());
-        order.setProducts(orderDetails.getProducts()); // Make sure products are correctly managed
-        order.setUser(orderDetails.getUser()); // Make sure user is correctly managed
+        // order.setProducts(orderDetails.getProducts());
+        order.setUser(orderDetails.getUser());
         return orderRepository.save(order);
     }
 
