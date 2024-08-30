@@ -1,7 +1,9 @@
 package com.g12.tpo.server.dto;
 
 import java.util.Set;
+import lombok.Data;
 
+@Data
 public class CartDTO {
     private Long id;
     private Long userId; // Assuming Cart is related to a User

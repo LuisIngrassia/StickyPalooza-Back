@@ -1,6 +1,7 @@
 package com.g12.tpo.server.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import com.g12.tpo.server.repository.OrderRepository;
 
 @Service
 public class OrderService {
-   
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -18,8 +19,8 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+    public Optional<Order> getOrderById(Long id) {
+        return orderRepository.findById(id);
     }
 
     public List<Order> getAllOrders() {
@@ -27,8 +28,11 @@ public class OrderService {
     }
 
     public Order updateOrder(Long id, Order orderDetails) {
-        Order order = getOrderById(id);
-        order.setProducts(orderDetails.getProducts());
+        Order order = getOrderById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setOrderDate(orderDetails.getOrderDate());
+        order.setTotalPrice(orderDetails.getTotalPrice());
+        order.setProducts(orderDetails.getProducts()); // Make sure products are correctly managed
+        order.setUser(orderDetails.getUser()); // Make sure user is correctly managed
         return orderRepository.save(order);
     }
 

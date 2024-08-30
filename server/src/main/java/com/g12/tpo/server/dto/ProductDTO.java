@@ -1,7 +1,9 @@
 package com.g12.tpo.server.dto;
 
 import java.math.BigDecimal;
+import lombok.Data;
 
+@Data
 public class ProductDTO {
     private Long id;
     private String name;

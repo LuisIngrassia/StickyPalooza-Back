@@ -1,7 +1,9 @@
 package com.g12.tpo.server.dto;
 
 import java.util.List;
+import lombok.Data;
 
+@Data
 public class UserDTO {
     private Long id;
     private String email;
