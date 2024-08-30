@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.g12.tpo.server.dto.OrderDTO;
+import com.g12.tpo.server.entity.dto.OrderDTO;
 import com.g12.tpo.server.entity.Order;
-import com.g12.tpo.server.entity.Product;
+//import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.OrderService;
 
 @RestController

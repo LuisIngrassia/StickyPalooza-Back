@@ -3,7 +3,7 @@ package com.g12.tpo.server.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
-import java.util.Set;
+//import java.util.Set;
 
 @Entity
 @Data
