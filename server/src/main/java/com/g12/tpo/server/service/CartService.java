@@ -29,6 +29,7 @@ public class CartService {
     public Cart updateCart(Long id, Cart cartDetails) {
         Cart cart = getCartById(id);
         cart.setProducts(cartDetails.getProducts());
+        cart.setUser(cartDetails.getUser());
         return cartRepository.save(cart);
     }
 

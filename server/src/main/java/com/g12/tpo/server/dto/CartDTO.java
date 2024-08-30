@@ -1,13 +1,13 @@
 package com.g12.tpo.server.dto;
 
-import java.util.Set;
 import lombok.Data;
+import java.util.Set;
 
 @Data
 public class CartDTO {
     private Long id;
-    private Long userId; // Assuming Cart is related to a User
-    private Set<Long> productIds; // Assuming Cart holds a list of product IDs
+    private Long userId; // ID del usuario relacionado
+    private Set<Long> productIds; // IDs de los productos en el carrito
 
-    // Getters and Setters
+    // Getters y Setters generados automáticamente por Lombok
 }
