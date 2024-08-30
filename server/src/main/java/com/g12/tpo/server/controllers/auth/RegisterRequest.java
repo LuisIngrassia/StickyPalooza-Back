@@ -1,6 +1,6 @@
 package com.g12.tpo.server.controllers.auth;
 
-import org.springframework.context.annotation.Role;
+import com.g12.tpo.server.entity.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
