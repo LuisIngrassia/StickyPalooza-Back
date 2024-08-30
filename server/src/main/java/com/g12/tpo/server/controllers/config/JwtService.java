@@ -1,6 +1,5 @@
 package com.g12.tpo.server.controllers.config;
 
-
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
