@@ -9,8 +9,5 @@ public class ProductDTO {
     private String name;
     private String description;
     private BigDecimal price;
-    private Long categoryId; // Assuming Product is related to a Category
     private int stockQuantity;
-
-    // Getters and Setters
 }

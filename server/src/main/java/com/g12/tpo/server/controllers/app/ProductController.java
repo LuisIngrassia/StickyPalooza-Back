@@ -1,8 +1,10 @@
 package com.g12.tpo.server.controllers.app;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.g12.tpo.server.entity.Product;
+import com.g12.tpo.server.entity.dto.ProductDTO;
 import com.g12.tpo.server.service.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +20,47 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    // Convert Product to ProductDTO
+    private ProductDTO convertToDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setName(product.getName());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setStockQuantity(product.getStockQuantity());
+        return productDTO;
+    }
+
+    // Convert ProductDTO to Product
+    private Product convertToEntity(ProductDTO productDTO) {
+        Product product = new Product();
+        product.setId(productDTO.getId());
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        // Aquí necesitas obtener la entidad `Category` a partir del `categoryId`
+        product.setStockQuantity(productDTO.getStockQuantity());
+        return product;
+    }
+
     // Get all products
     @GetMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        List<ProductDTO> productDTOs = products.stream()
+                                               .map(this::convertToDTO)
+                                               .collect(Collectors.toList());
+        return ResponseEntity.ok(productDTOs);
     }
 
     // Get product by ID
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         if (product != null) {
-            return ResponseEntity.ok(product);
+            return ResponseEntity.ok(convertToDTO(product));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -40,17 +69,19 @@ public class ProductController {
     // Create product
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+        Product product = convertToEntity(productDTO);
         Product createdProduct = productService.createProduct(product);
-        return ResponseEntity.status(201).body(createdProduct);
+        return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
 
     // Update product
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        Product productDetails = convertToEntity(productDTO);
         Product updatedProduct = productService.updateProduct(id, productDetails);
-        return ResponseEntity.ok(updatedProduct);
+        return ResponseEntity.ok(convertToDTO(updatedProduct));
     }
 
     // Delete product

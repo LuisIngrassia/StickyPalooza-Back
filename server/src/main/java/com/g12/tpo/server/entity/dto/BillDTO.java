@@ -10,5 +10,4 @@ public class BillDTO {
     private Long userId;
     private Set<Long> productIds;
     private Double totalAmount;
-
 }
