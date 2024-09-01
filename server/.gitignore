@@ -33,7 +33,7 @@ build/
 .vscode/
 
 # Ignore application.properties
-# application.properties
+application.properties
 
 # spring.application.name=server
 # server.port=5000
