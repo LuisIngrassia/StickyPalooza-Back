@@ -38,7 +38,6 @@ public class ProductController {
         product.setName(productDTO.getName());
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
-        // Aquí necesitas obtener la entidad `Category` a partir del `categoryId`
         product.setStockQuantity(productDTO.getStockQuantity());
         return product;
     }

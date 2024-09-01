@@ -2,8 +2,10 @@ package com.g12.tpo.server.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.g12.tpo.server.entity.Product;
+import com.g12.tpo.server.exceptions.ProductNotFoundException;
 import com.g12.tpo.server.repository.ProductRepository;
 
 import java.util.List;
@@ -20,15 +22,14 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Product no encontrado"));
+            .orElseThrow(() -> new ProductNotFoundException("Producto no encontrado con ID: " + id));
     }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    // REVISAR UPDATEPRODUCT :V
-
+    @Transactional
     public Product updateProduct(Long id, Product productDetails) {
         Product product = getProductById(id);
         product.setName(productDetails.getName());
@@ -41,7 +42,7 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Producto no encontrado");
+            throw new ProductNotFoundException("Producto no encontrado con ID: " + id);
         }
         productRepository.deleteById(id);
     }
