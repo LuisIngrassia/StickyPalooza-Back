@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.g12.tpo.server.entity.dto.CategoryDTO;
 import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.exceptions.CategoryDuplicateException;
-import com.g12.tpo.server.service.CategoryService;
+import com.g12.tpo.server.service.interfaces.CategoryService;
 
 @RestController
 @RequestMapping("categories")
@@ -52,5 +53,10 @@ public class CategoriesController {
         return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
     
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.noContent().build();
+    }
 
 }

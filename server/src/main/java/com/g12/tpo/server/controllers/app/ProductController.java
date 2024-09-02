@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.dto.ProductDTO;
-import com.g12.tpo.server.service.ProductService;
+import com.g12.tpo.server.service.interfaces.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

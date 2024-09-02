@@ -19,7 +19,7 @@ import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.entity.dto.BillDTO;
-import com.g12.tpo.server.service.BillService;
+import com.g12.tpo.server.service.interfaces.BillService;
 
 @RestController
 @RequestMapping("/bills")

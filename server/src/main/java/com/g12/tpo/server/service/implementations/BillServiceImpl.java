@@ -1,4 +1,4 @@
-package com.g12.tpo.server.service;
+package com.g12.tpo.server.service.implementations;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.repository.BillRepository;
+import com.g12.tpo.server.service.interfaces.BillService;
 
 @Service
 public class BillServiceImpl implements BillService {

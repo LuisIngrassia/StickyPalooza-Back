@@ -1,4 +1,4 @@
-package com.g12.tpo.server.service;
+package com.g12.tpo.server.service.interfaces;
 
 import java.util.List;
 
