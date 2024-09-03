@@ -1,4 +1,4 @@
-package com.g12.tpo.server.entity.dto;
+package com.g12.tpo.server.dto;
 
 import java.math.BigDecimal;
 

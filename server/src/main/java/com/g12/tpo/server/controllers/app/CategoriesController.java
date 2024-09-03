@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.g12.tpo.server.entity.dto.CategoryDTO;
+import com.g12.tpo.server.dto.CategoryDTO;
 import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.exceptions.CategoryDuplicateException;
 import com.g12.tpo.server.service.interfaces.CategoryService;

@@ -1,6 +1,6 @@
 package com.g12.tpo.server.controllers.app;
 
-import com.g12.tpo.server.entity.dto.CartDTO;
+import com.g12.tpo.server.dto.CartDTO;
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.entity.Product;

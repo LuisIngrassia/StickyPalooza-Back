@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.entity.Product;
-import com.g12.tpo.server.entity.dto.ProductDTO;
+import com.g12.tpo.server.dto.ProductDTO;
 import com.g12.tpo.server.service.interfaces.ProductService;
 import com.g12.tpo.server.service.interfaces.CategoryService;
 

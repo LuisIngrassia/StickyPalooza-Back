@@ -2,7 +2,7 @@ package com.g12.tpo.server.controllers.app;
 
 import com.g12.tpo.server.entity.Role;
 import com.g12.tpo.server.entity.User;
-import com.g12.tpo.server.entity.dto.UserDTO;
+import com.g12.tpo.server.dto.UserDTO;
 import com.g12.tpo.server.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

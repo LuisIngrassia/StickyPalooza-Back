@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.g12.tpo.server.entity.dto.OrderDTO;
+import com.g12.tpo.server.dto.OrderDTO;
 import com.g12.tpo.server.service.interfaces.OrderService;
 import com.g12.tpo.server.entity.Order;
 
