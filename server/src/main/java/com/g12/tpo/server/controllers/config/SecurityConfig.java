@@ -40,9 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/categories/**").authenticated()
                 .requestMatchers("/carts/**").authenticated()
                 .requestMatchers("/products/**").authenticated()
-                .requestMatchers("/bills/**").authenticated()
-                .anyRequest()
-                .authenticated())
+                .requestMatchers("/bills/**").authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .authenticationProvider(authenticationProvider) // Keep custom provider
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
