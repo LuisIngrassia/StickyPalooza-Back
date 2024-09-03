@@ -28,13 +28,12 @@ public class AuthController {
             AuthResponse authResponse = service.register(request);
 
             cartService.createCart(authResponse.getUserId());
-                    
-            // MODIFICAR ACA UNA VEZ QUE VERIFIQUEMOS QUE FUNCIONE
+
             AuthResponse responseWithoutUserId = AuthResponse.builder()
             .accessToken(authResponse.getAccessToken())
             .build();
 
-            return ResponseEntity.ok(authResponse);
+            return ResponseEntity.ok(responseWithoutUserId);
         }
     
         @PostMapping("/register/admin")

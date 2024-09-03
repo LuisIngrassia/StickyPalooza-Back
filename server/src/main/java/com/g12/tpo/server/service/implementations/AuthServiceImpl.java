@@ -30,14 +30,11 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-    
-        // Guardar el usuario en la base de datos
+
         User savedUser = repository.save(user);
-        
-        // Generar el token JWT
+
         var jwtToken = jwtService.generateToken(savedUser);
-        
-        // Devolver el token y el ID del usuario en la respuesta
+
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .userId(savedUser.getId())
@@ -55,10 +52,10 @@ public class AuthServiceImpl implements AuthService {
         }
     
         String token = jwtService.generateToken(user);
-    
-        // Devolver el token y el userId en la respuesta
+
         return AuthResponse.builder()
                 .accessToken(token)
+                .userId(user.getId())
                 .build();
     }
     
