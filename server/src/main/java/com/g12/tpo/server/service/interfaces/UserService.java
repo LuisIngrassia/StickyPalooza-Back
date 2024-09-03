@@ -2,7 +2,6 @@ package com.g12.tpo.server.service.interfaces;
 
 import com.g12.tpo.server.entity.User;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
