@@ -85,6 +85,7 @@ public class ProductController {
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
 
+    
     // Update product
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -101,4 +102,6 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    
 }
