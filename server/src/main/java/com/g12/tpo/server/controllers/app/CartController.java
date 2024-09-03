@@ -23,14 +23,15 @@ public class CartController {
     private CartService cartService;
 
     private CartDTO convertToDTO(Cart cart) {
-        CartDTO dto = new CartDTO();
-        dto.setId(cart.getId());
-        dto.setUserId(cart.getUser().getId());
-        dto.setProductIds(cart.getProducts().stream()
-                                .map(Product::getId)
-                                .collect(Collectors.toSet()));
-        return dto;
+        return CartDTO.builder()
+            .id(cart.getId())
+            .userId(cart.getUser() != null ? cart.getUser().getId() : null)
+            .productIds(cart.getProducts().stream()
+                .map(Product::getId)
+                .collect(Collectors.toSet()))
+            .build();
     }
+    
 
     private Cart convertToEntity(CartDTO dto) {
         Cart cart = new Cart();

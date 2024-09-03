@@ -50,6 +50,18 @@ public class BillController {
         return bill;
     }
 
+    // Convert Bill to BillDTO
+    private BillDTO convertToDTO(Bill bill) {
+        return BillDTO.builder()
+            .id(bill.getId())
+            .userId(bill.getUser().getId())
+            .productIds(bill.getProducts().stream()
+                .map(Product::getId)
+                .collect(Collectors.toSet()))
+            .totalAmount(bill.getTotalAmount())
+            .build();
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<BillDTO> createBill(@RequestBody BillDTO billDTO) {
@@ -88,17 +100,6 @@ public class BillController {
     public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
         billService.deleteBill(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private BillDTO convertToDTO(Bill bill) {
-        BillDTO dto = new BillDTO();
-        dto.setId(bill.getId());
-        dto.setUserId(bill.getUser().getId());
-        dto.setProductIds(bill.getProducts().stream()
-                                .map(product -> product.getId())
-                                .collect(Collectors.toSet()));
-        dto.setTotalAmount(bill.getTotalAmount());
-        return dto;
     }
 
 }

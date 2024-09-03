@@ -25,17 +25,18 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    // Convert Product to ProductDTO
+// Convert Product to ProductDTO
     private ProductDTO convertToDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(product.getId());
-        productDTO.setName(product.getName());
-        productDTO.setDescription(product.getDescription());
-        productDTO.setPrice(product.getPrice());
-        productDTO.setStockQuantity(product.getStockQuantity());
-        productDTO.setCategoryId(product.getCategory().getId());  // Incluye categoryId
-        return productDTO;
-    }
+        return ProductDTO.builder()
+            .id(product.getId())
+            .name(product.getName())
+            .description(product.getDescription())
+            .price(product.getPrice())
+            .stockQuantity(product.getStockQuantity())
+            .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)  // Incluye categoryId
+            .build();
+}
+
 
     // Convert ProductDTO to Product
     private Product convertToEntity(ProductDTO productDTO) {

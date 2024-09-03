@@ -29,39 +29,58 @@ public class CategoriesController {
     @Autowired
     private CategoryService categoryService;
 
+    // Convert Category to CategoryDTO
+    private CategoryDTO convertToDTO(Category category) {
+        return CategoryDTO.builder()
+            .id(category.getId())
+            .description(category.getDescription())
+            .build();
+    }
+    
+
+    // Convert CategoryDTO to Category
+    private Category convertToEntity(CategoryDTO dto) {
+        Category category = new Category();
+        category.setId(dto.getId());
+        category.setDescription(dto.getDescription());
+        return category;
+    }
+
     @GetMapping("/getAll")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Page<Category>> getCategories(
+    public ResponseEntity<Page<CategoryDTO>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        if (page == null || size == null)
-            return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(page, size)));
+        Page<Category> categoriesPage = (page == null || size == null) ?
+                categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)) :
+                categoryService.getCategories(PageRequest.of(page, size));
+        
+        Page<CategoryDTO> categoryDTOsPage = categoriesPage.map(this::convertToDTO);
+        return ResponseEntity.ok(categoryDTOsPage);
     }
 
     @GetMapping("/{categoryId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long categoryId) {
         Optional<Category> result = categoryService.getCategoryById(categoryId);
-        if (result.isPresent())
-            return ResponseEntity.ok(result.get());
-
-        return ResponseEntity.noContent().build();
+        return result.map(category -> ResponseEntity.ok(convertToDTO(category)))
+                     .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Object> createCategory(@RequestBody CategoryDTO categoryRequest)
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryRequest)
             throws CategoryDuplicateException {
-        Category result = categoryService.createCategory(categoryRequest.getDescription());
-        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
+        Category category = convertToEntity(categoryRequest);
+        Category result = categoryService.createCategory(category.getDescription());
+        return ResponseEntity.created(URI.create("/categories/" + result.getId()))
+                             .body(convertToDTO(result));
     }
-    
+
     @DeleteMapping("/{categoryId}")
-    @PreAuthorize("whasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.noContent().build();
     }
-
 }

@@ -1,7 +1,6 @@
 package com.g12.tpo.server.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import java.util.Set;
 
