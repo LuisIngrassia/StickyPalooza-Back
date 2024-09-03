@@ -12,7 +12,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-
 @Entity
 @Data
 @Table(name = "products")
@@ -40,6 +39,5 @@ public class Product {
     
     @ManyToOne
     @JoinColumn(name = "bill_id")
-    private Bill bill;
+    private Bill bill;  // Asegúrate de que esta propiedad existe
 }
-

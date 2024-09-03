@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.dto.ProductDTO;
 import com.g12.tpo.server.service.interfaces.ProductService;
+import com.g12.tpo.server.service.interfaces.CategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +21,9 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // Convert Product to ProductDTO
-    private ProductDTO convertToDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(product.getId());
-        productDTO.setName(product.getName());
-        productDTO.setDescription(product.getDescription());
-        productDTO.setPrice(product.getPrice());
-        productDTO.setStockQuantity(product.getStockQuantity());
-        return productDTO;
-    }
+    @Autowired
+    private CategoryService categoryService;
+
 
     // Convert ProductDTO to Product
     private Product convertToEntity(ProductDTO productDTO) {
@@ -39,6 +33,7 @@ public class ProductController {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setStockQuantity(productDTO.getStockQuantity());
+        product.setCategory(categoryService.getCategoryById(productDTO.getCategoryId()).orElse(null));
         return product;
     }
 

@@ -1,5 +1,4 @@
 ### VS Code ###
 .vscode/
 
-application.properties
-application-local.properties
+src/main/resources/application.properties
