@@ -24,8 +24,17 @@ public class AuthController {
         public ResponseEntity<AuthResponse> registerUser(
                 @RequestBody RegisterRequest request) {
             request.setRole(Role.USER);
-            cartService.createCart(null);
-            return ResponseEntity.ok(service.register(request));
+
+            AuthResponse authResponse = service.register(request);
+
+            cartService.createCart(authResponse.getUserId());
+                    
+            // MODIFICAR ACA UNA VEZ QUE VERIFIQUEMOS QUE FUNCIONE
+            AuthResponse responseWithoutUserId = AuthResponse.builder()
+            .accessToken(authResponse.getAccessToken())
+            .build();
+
+            return ResponseEntity.ok(authResponse);
         }
     
         @PostMapping("/register/admin")

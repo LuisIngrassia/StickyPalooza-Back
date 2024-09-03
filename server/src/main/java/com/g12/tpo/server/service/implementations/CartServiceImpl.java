@@ -1,6 +1,5 @@
 package com.g12.tpo.server.service.implementations;
 
-import org.hibernate.mapping.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +10,7 @@ import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.service.interfaces.UserService;
 
 import java.util.List;
+import java.util.HashSet;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -28,6 +28,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = Cart.builder()
                 .user(user)
+                .products(new HashSet<>())
                 .build();
 
         return cartRepository.save(cart);

@@ -30,24 +30,36 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-
-        repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+    
+        // Guardar el usuario en la base de datos
+        User savedUser = repository.save(user);
+        
+        // Generar el token JWT
+        var jwtToken = jwtService.generateToken(savedUser);
+        
+        // Devolver el token y el ID del usuario en la respuesta
         return AuthResponse.builder()
                 .accessToken(jwtToken)
+                .userId(savedUser.getId())
                 .build();
     }
+    
 
     @Override
     public AuthResponse authenticate(AuthRequest request) {
         User user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
+    
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
-
+    
         String token = jwtService.generateToken(user);
-        return new AuthResponse(token);
+    
+        // Devolver el token y el userId en la respuesta
+        return AuthResponse.builder()
+                .accessToken(token)
+                .build();
     }
+    
 }

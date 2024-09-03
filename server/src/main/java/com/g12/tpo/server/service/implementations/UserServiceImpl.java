@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
             user.setLastName(updatedUser.getLastName());
             user.setPassword(updatedUser.getPassword());
             user.setRole(updatedUser.getRole());
-            // Actualiza otros campos según sea necesario
 
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("User not found"));
