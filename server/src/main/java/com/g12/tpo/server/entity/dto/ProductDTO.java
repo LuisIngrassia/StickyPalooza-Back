@@ -1,9 +1,12 @@
 package com.g12.tpo.server.entity.dto;
 
 import java.math.BigDecimal;
+
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ProductDTO {
     private Long id;
     private String name;
