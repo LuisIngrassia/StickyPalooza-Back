@@ -25,7 +25,7 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-// Convert Product to ProductDTO
+    // Convert Product to ProductDTO
     private ProductDTO convertToDTO(Product product) {
         return ProductDTO.builder()
             .id(product.getId())
@@ -35,7 +35,7 @@ public class ProductController {
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)  // Incluye categoryId
             .build();
-}
+    }
 
 
     // Convert ProductDTO to Product

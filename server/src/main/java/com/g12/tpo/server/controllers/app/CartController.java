@@ -36,7 +36,6 @@ public class CartController {
     private Cart convertToEntity(CartDTO dto) {
         Cart cart = new Cart();
         cart.setId(dto.getId());
-
         User user = new User();
         user.setId(dto.getUserId());
         cart.setUser(user);
@@ -55,11 +54,11 @@ public class CartController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CartDTO> createCart(@RequestBody CartDTO cartDTO) {
-        Cart cart = convertToEntity(cartDTO);
-        Cart createdCart = cartService.createCart(cart);
+    public ResponseEntity<CartDTO> createCart(@RequestParam Long userId) {
+        Cart createdCart = cartService.createCart(userId);
         return ResponseEntity.ok(convertToDTO(createdCart));
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")

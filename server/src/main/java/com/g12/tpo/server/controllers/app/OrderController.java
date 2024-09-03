@@ -68,16 +68,16 @@ public class OrderController {
         return ResponseEntity.ok(orderDTOs);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
-        Order order = convertToEntity(orderDTO);
-        Order updatedOrder = orderService.updateOrder(id, order);
-        return ResponseEntity.ok(convertToDTO(updatedOrder));
-    }
+    // @PutMapping("/{id}")
+    // @PreAuthorize("hasAuthority('ADMIN')")
+    // public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
+    //     Order order = convertToEntity(orderDTO);
+    //     Order updatedOrder = orderService.updateOrder(id, order);
+    //     return ResponseEntity.ok(convertToDTO(updatedOrder));
+    // }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();

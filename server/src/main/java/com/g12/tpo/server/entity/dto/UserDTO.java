@@ -11,6 +11,8 @@ public class UserDTO {
     private String password;
     private String firstName;
     private String lastName;
+    private Long cartId;
     private List<Long> orderIds;
+    private List<Long> billIds;
     private String role;
 }

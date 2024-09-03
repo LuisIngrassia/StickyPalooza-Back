@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.g12.tpo.server.entity.Role;
 import com.g12.tpo.server.service.interfaces.AuthService;
+import com.g12.tpo.server.service.interfaces.CartService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,12 +18,13 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
         private final AuthService service;
-    
+        private final CartService cartService;
 
         @PostMapping("/register/user")
         public ResponseEntity<AuthResponse> registerUser(
                 @RequestBody RegisterRequest request) {
             request.setRole(Role.USER);
+            cartService.createCart(null);
             return ResponseEntity.ok(service.register(request));
         }
     

@@ -1,11 +1,14 @@
 package com.g12.tpo.server.service.implementations;
 
+import org.hibernate.mapping.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.g12.tpo.server.entity.Cart;
+import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.CartRepository;
 import com.g12.tpo.server.service.interfaces.CartService;
+import com.g12.tpo.server.service.interfaces.UserService;
 
 import java.util.List;
 
@@ -15,8 +18,18 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private UserService userService;
+
     @Override
-    public Cart createCart(Cart cart) {
+    public Cart createCart(Long userId) {
+        User user = userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = Cart.builder()
+                .user(user)
+                .build();
+
         return cartRepository.save(cart);
     }
 

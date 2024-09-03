@@ -4,7 +4,7 @@ import com.g12.tpo.server.entity.Cart;
 import java.util.List;
 
 public interface CartService {
-    Cart createCart(Cart cart);
+    Cart createCart(Long userId);
 
     Cart getCartById(Long id);
 

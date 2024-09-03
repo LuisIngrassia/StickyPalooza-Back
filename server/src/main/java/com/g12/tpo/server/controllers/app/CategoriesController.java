@@ -36,7 +36,6 @@ public class CategoriesController {
             .description(category.getDescription())
             .build();
     }
-    
 
     // Convert CategoryDTO to Category
     private Category convertToEntity(CategoryDTO dto) {

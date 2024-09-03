@@ -16,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +49,12 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    private List<Bill> bills;
+
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -82,6 +89,4 @@ public class User implements UserDetails {
         return true;
     }
     
-    @OneToMany(mappedBy = "user")
-    private Set<Bill> bills;
 }
