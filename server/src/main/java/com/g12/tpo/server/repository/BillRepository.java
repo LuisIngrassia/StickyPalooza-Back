@@ -11,9 +11,9 @@ import com.g12.tpo.server.entity.Bill;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
 
-    @Query(value = "select b from Bill b where b.user.id = ?1")
+    @Query(value = "select b from bills b where b.user.id = ?1")
     List<Bill> findByUserId(Long userId);
 
-    @Query(value = "select b from Bill b where b.totalAmount > ?1")
+    @Query(value = "select b from bills b where b.totalAmount > ?1")
     List<Bill> findByTotalAmountGreaterThan(Double amount);
 }
