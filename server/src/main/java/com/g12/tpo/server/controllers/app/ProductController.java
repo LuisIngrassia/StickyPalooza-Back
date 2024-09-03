@@ -3,6 +3,7 @@ package com.g12.tpo.server.controllers.app;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.dto.ProductDTO;
 import com.g12.tpo.server.service.interfaces.ProductService;
@@ -24,6 +25,17 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
+    // Convert Product to ProductDTO
+    private ProductDTO convertToDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setName(product.getName());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setStockQuantity(product.getStockQuantity());
+        productDTO.setCategoryId(product.getCategory().getId());  // Incluye categoryId
+        return productDTO;
+    }
 
     // Convert ProductDTO to Product
     private Product convertToEntity(ProductDTO productDTO) {
@@ -33,7 +45,11 @@ public class ProductController {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setStockQuantity(productDTO.getStockQuantity());
-        product.setCategory(categoryService.getCategoryById(productDTO.getCategoryId()).orElse(null));
+
+        Category category = categoryService.getCategoryById(productDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        product.setCategory(category);
+
         return product;
     }
 
