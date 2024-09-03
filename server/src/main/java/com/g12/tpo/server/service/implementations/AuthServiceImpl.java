@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.g12.tpo.server.controllers.auth.AuthRequest;
 import com.g12.tpo.server.controllers.auth.AuthResponse;
+import com.g12.tpo.server.controllers.auth.LoginRequest;
 import com.g12.tpo.server.controllers.auth.RegisterRequest;
 import com.g12.tpo.server.controllers.config.JwtService;
 import com.g12.tpo.server.entity.User;
@@ -41,10 +42,23 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse authenticate(AuthRequest request) {
         User user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
+        }
+
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(token);
+    }
+
+    @Override
+    public AuthResponse login(LoginRequest request) {
+        User user = repository.findByEmail(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Contraseña o usuario correcto");
         }
 
         String token = jwtService.generateToken(user);
