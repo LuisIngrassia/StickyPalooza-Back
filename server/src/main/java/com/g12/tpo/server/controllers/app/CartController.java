@@ -1,5 +1,6 @@
 package com.g12.tpo.server.controllers.app;
 
+import com.g12.tpo.server.dto.AddProductToCartRequest;
 import com.g12.tpo.server.dto.CartDTO;
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.entity.Cart;
@@ -84,13 +85,13 @@ public class CartController {
         return ResponseEntity.ok(cartDTOs);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateCart(@PathVariable Long id, @RequestBody CartDTO cartDTO) {
+    
+    @PostMapping("/addProduct")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> addProductToCart(@RequestBody AddProductToCartRequest request) {
         try {
-            Cart cart = convertToEntity(cartDTO);
-            Cart updatedCart = cartService.updateCart(id, cart);
-            return ResponseEntity.ok(convertToDTO(updatedCart));
+            cartService.addProductToCart(request.getCartId(), request.getProductId(), request.getQuantity());
+            return ResponseEntity.ok("Product added to cart");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

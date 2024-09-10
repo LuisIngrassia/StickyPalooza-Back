@@ -10,7 +10,7 @@ public interface CartService {
 
     List<Cart> getAllCarts();
 
-    Cart updateCart(Long id, Cart cartDetails);
+    void addProductToCart(Long cartId, Long productId, int quantity);
 
     void deleteCart(Long id);
 }
