@@ -52,7 +52,7 @@ public class Bill {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
+    @Column(name = "payment_method", nullable = true)
     private PaymentMethod paymentMethod;
 
     @Override

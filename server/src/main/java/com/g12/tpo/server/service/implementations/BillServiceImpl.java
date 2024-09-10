@@ -11,9 +11,12 @@ import org.springframework.stereotype.Service;
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.BillProduct;
 import com.g12.tpo.server.entity.Order;
+import com.g12.tpo.server.entity.PaymentMethod;
 import com.g12.tpo.server.repository.BillRepository;
 import com.g12.tpo.server.service.interfaces.BillService;
 import com.g12.tpo.server.service.interfaces.OrderService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class BillServiceImpl implements BillService {
@@ -24,17 +27,17 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private OrderService orderService;
 
+    @Transactional
     @Override
     public Bill convertOrderToBill(Long orderId) {
-        // Get the order by its ID
         Order order = orderService.getOrderById(orderId);
 
         Bill bill = new Bill();
         bill.setOrder(order);
         bill.setBillDate(new Date()); 
         bill.setTotalAmount(order.getTotalAmount());
+        bill.setUser(order.getUser());
 
-        // Create BillProducts from OrderProducts
         Set<BillProduct> billProducts = order.getOrderProducts().stream()
                 .map(orderProduct -> {
                     BillProduct billProduct = new BillProduct();
