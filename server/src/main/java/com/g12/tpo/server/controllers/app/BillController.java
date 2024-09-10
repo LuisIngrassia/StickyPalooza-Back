@@ -36,8 +36,7 @@ public class BillController {
 
     private Bill convertToEntity(BillDTO dto, List<ProductDTO> productDTOs) {
 
-        Order order = orderService.getOrderById(dto.getOrderId())
-            .orElseThrow(() -> new RuntimeException("Order not found with ID: " + dto.getOrderId()));
+        Order order = orderService.getOrderById(dto.getOrderId());
 
         Bill bill = new Bill();
         bill.setOrder(order);

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -38,41 +39,42 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(OrderDTO orderDTO) {
+        
         User user = userService.getUserById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+    
         BigDecimal totalAmount = BigDecimal.ZERO;
+
         Order order = Order.builder()
                 .user(user)
                 .orderDate(new Date())
                 .orderProducts(new HashSet<>())
                 .totalAmount(totalAmount)
                 .build();
-
-        orderDTO.getProductQuantities().forEach((productId, quantity) -> {
+    
+        for (Map.Entry<Long, Integer> entry : orderDTO.getProductQuantities().entrySet()) {
+            Long productId = entry.getKey();
+            Integer quantity = entry.getValue();
+    
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new RuntimeException("Product not found"));
-
-            if (product.getStockQuantity() < quantity) {
-                throw new RuntimeException("Not enough stock");
-            }
-
+    
             OrderProduct orderProduct = new OrderProduct();
             orderProduct.setOrder(order);
             orderProduct.setProduct(product);
             orderProduct.setQuantity(quantity);
-
+    
             orderProductRepository.save(orderProduct);
-
-            product.setStockQuantity(product.getStockQuantity() - quantity);
+    
             productRepository.save(product);
-
+    
             totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
-        });
-
+        }
+    
         order.setTotalAmount(totalAmount);
         return orderRepository.save(order);
     }
+    
 
     @Override
     public Order getOrderById(Long id) {
