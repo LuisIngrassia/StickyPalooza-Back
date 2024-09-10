@@ -3,7 +3,6 @@ package com.g12.tpo.server.service.implementations;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.UserRepository;
 import com.g12.tpo.server.service.interfaces.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +44,6 @@ public class UserServiceImpl implements UserService {
             user.setLastName(updatedUser.getLastName());
             user.setPassword(updatedUser.getPassword());
             user.setRole(updatedUser.getRole());
-
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("User not found"));
     }

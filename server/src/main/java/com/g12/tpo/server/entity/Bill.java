@@ -1,5 +1,6 @@
 package com.g12.tpo.server.entity;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -30,6 +31,6 @@ public class Bill {
     private Set<Product> products;
 
     @Column(nullable = false)
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
 }

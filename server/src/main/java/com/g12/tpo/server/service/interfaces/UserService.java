@@ -1,14 +1,12 @@
 package com.g12.tpo.server.service.interfaces;
 
 import com.g12.tpo.server.entity.User;
-
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-public interface UserService {
+import java.util.Optional;
 
+public interface UserService {
     Page<User> getAllUsers(PageRequest pageRequest);
 
     Optional<User> getUserById(Long id);

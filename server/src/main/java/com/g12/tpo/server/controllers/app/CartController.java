@@ -54,10 +54,11 @@ public class CartController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CartDTO> createCart(@RequestParam Long userId) {
-        Cart createdCart = cartService.createCart(userId);
+    public ResponseEntity<CartDTO> createCart(@RequestBody CartDTO cartDTO) {
+        Cart createdCart = cartService.createCart(cartDTO.getUserId());
         return ResponseEntity.ok(convertToDTO(createdCart));
     }
+    
 
 
     @GetMapping("/{id}")
