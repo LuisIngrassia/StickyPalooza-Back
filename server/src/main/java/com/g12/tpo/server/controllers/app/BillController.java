@@ -35,30 +35,27 @@ public class BillController {
     private ProductRepository productRepository;
 
     private Bill convertToEntity(BillDTO dto, List<ProductDTO> productDTOs) {
-        // Obtener la orden
+
         Order order = orderService.getOrderById(dto.getOrderId())
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + dto.getOrderId()));
 
-        // Crear la instancia de Bill
         Bill bill = new Bill();
         bill.setOrder(order);
         bill.setTotalAmount(dto.getTotalAmount());
         bill.setPaymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()));
 
-        // Asociar productos a la factura (BillProduct) y convertir la lista en un Set
         Set<BillProduct> billProducts = productDTOs.stream()
                 .map(productDTO -> {
                     Product product = productRepository.findById(productDTO.getId())
                             .orElseThrow(() -> new RuntimeException("Product not found"));
-                    BillProduct billProduct = new BillProduct(); // Constructor explícito
+                    BillProduct billProduct = new BillProduct();
                     billProduct.setBill(bill);
                     billProduct.setProduct(product);
                     billProduct.setQuantity(productDTO.getStockQuantity());
                     return billProduct;
                 })
-                .collect(Collectors.toCollection(HashSet::new)); // Convertir a HashSet
+                .collect(Collectors.toCollection(HashSet::new)); 
 
-        // Asignar los productos a la factura
         bill.setBillProducts(billProducts);
 
         return bill;

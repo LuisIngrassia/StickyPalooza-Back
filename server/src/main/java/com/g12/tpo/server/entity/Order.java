@@ -13,25 +13,25 @@ import java.util.Set;
 @Entity
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "order_date", nullable = false)
     private Date orderDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartProduct> cartProducts;
-    
-    @Column(name = "total_price", nullable = false)
+    private Set<OrderProduct> orderProducts;
+
+    @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
 }

@@ -2,16 +2,24 @@ package com.g12.tpo.server.service.implementations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.g12.tpo.server.entity.Order;
-import com.g12.tpo.server.entity.Bill;
-import com.g12.tpo.server.entity.User;
-import com.g12.tpo.server.repository.OrderRepository;
-import com.g12.tpo.server.repository.BillRepository;
-import com.g12.tpo.server.repository.UserRepository;
-import com.g12.tpo.server.service.interfaces.OrderService;
 
+import com.g12.tpo.server.dto.OrderDTO;
+import com.g12.tpo.server.entity.Order;
+import com.g12.tpo.server.entity.OrderProduct;
+import com.g12.tpo.server.entity.Product;
+import com.g12.tpo.server.entity.User;
+import com.g12.tpo.server.repository.OrderProductRepository;
+import com.g12.tpo.server.repository.OrderRepository;
+import com.g12.tpo.server.repository.ProductRepository;
+import com.g12.tpo.server.service.interfaces.OrderService;
+import com.g12.tpo.server.service.interfaces.UserService;
+
+import jakarta.transaction.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -20,31 +28,56 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private BillRepository billRepository;
+    private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OrderProductRepository orderProductRepository;
 
     @Override
-    public Order createOrder(Order order) {
-        
-        if (order.getBill() != null) {
-            Bill bill = billRepository.findById(order.getBill().getId())
-                    .orElseThrow(() -> new RuntimeException("Bill not found"));
-            order.setTotalAmount(bill.getTotalAmount());
-        }
-        // Buscar User por userId
-        if (order.getUser() != null) {
-            User user = userRepository.findById(order.getUser().getId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            order.setUser(user);
-        }
+    public Order createOrder(OrderDTO orderDTO) {
+        User user = userService.getUserById(orderDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        Order order = Order.builder()
+                .user(user)
+                .orderDate(new Date())
+                .orderProducts(new HashSet<>())
+                .totalAmount(totalAmount)
+                .build();
+
+        orderDTO.getProductQuantities().forEach((productId, quantity) -> {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            if (product.getStockQuantity() < quantity) {
+                throw new RuntimeException("Not enough stock");
+            }
+
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setOrder(order);
+            orderProduct.setProduct(product);
+            orderProduct.setQuantity(quantity);
+
+            orderProductRepository.save(orderProduct);
+
+            product.setStockQuantity(product.getStockQuantity() - quantity);
+            productRepository.save(product);
+
+            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
+        });
+
+        order.setTotalAmount(totalAmount);
         return orderRepository.save(order);
     }
 
     @Override
-    public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
     @Override
@@ -52,28 +85,18 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll();
     }
 
-    @Override
-    public Order updateOrder(Long id, Order orderDetails) {
-        Order order = getOrderById(id).orElseThrow(() -> new RuntimeException("Order not found"));
-        order.setOrderDate(orderDetails.getOrderDate());
-        order.setTotalAmount(orderDetails.getTotalAmount());
-
-        if (orderDetails.getUser() != null) {
-            User user = userRepository.findById(orderDetails.getUser().getId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            order.setUser(user);
-        }
-
-        if (orderDetails.getBill() != null) {
-            Bill bill = billRepository.findById(orderDetails.getBill().getId())
-                    .orElseThrow(() -> new RuntimeException("Bill not found"));
-            order.setBill(bill);
-        }
-        return orderRepository.save(order);
-    }
-
+    @Transactional
     @Override
     public void deleteOrder(Long id) {
+        Order order = getOrderById(id);
+
+        for (OrderProduct orderProduct : order.getOrderProducts()) {
+            Product product = orderProduct.getProduct();
+            int quantity = orderProduct.getQuantity();
+            product.setStockQuantity(product.getStockQuantity() + quantity);  // Devolver stock
+            productRepository.save(product);
+        }
+
         orderRepository.deleteById(id);
     }
 }

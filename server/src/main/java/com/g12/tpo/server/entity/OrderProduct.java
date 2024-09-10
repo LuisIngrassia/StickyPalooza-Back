@@ -28,5 +28,4 @@ public class OrderProduct {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
-
 }
