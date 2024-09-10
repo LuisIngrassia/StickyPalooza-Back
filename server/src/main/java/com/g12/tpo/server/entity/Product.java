@@ -36,8 +36,4 @@ public class Product {
 
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
-    
-    @ManyToOne
-    @JoinColumn(name = "bill_id")
-    private Bill bill;  // Asegúrate de que esta propiedad existe
 }

@@ -27,7 +27,8 @@ public class Bill {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "bill")
+    @OneToMany
+    @JoinColumn(name = "bill_id")
     private Set<Product> products;
 
     @Column(nullable = false)

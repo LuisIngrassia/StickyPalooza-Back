@@ -3,6 +3,7 @@ package com.g12.tpo.server.controllers.app;
 import com.g12.tpo.server.dto.CartDTO;
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.entity.Cart;
+import com.g12.tpo.server.entity.CartProduct;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.User;
 
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,15 +25,18 @@ public class CartController {
     private CartService cartService;
 
     private CartDTO convertToDTO(Cart cart) {
+        Map<Long, Integer> productQuantities = cart.getCartProducts().stream()
+            .collect(Collectors.toMap(
+                cp -> cp.getProduct().getId(),
+                CartProduct::getQuantity
+            ));
+
         return CartDTO.builder()
             .id(cart.getId())
             .userId(cart.getUser() != null ? cart.getUser().getId() : null)
-            .productIds(cart.getProducts().stream()
-                .map(Product::getId)
-                .collect(Collectors.toSet()))
+            .productQuantities(productQuantities)
             .build();
     }
-    
 
     private Cart convertToEntity(CartDTO dto) {
         Cart cart = new Cart();
@@ -40,15 +45,18 @@ public class CartController {
         user.setId(dto.getUserId());
         cart.setUser(user);
 
-        Set<Product> products = dto.getProductIds().stream()
-                                   .map(productId -> {
-                                       Product product = new Product();
-                                       product.setId(productId);
-                                       return product;
-                                   })
-                                   .collect(Collectors.toSet());
-        cart.setProducts(products);
+        Set<CartProduct> cartProducts = dto.getProductQuantities().entrySet().stream()
+            .map(entry -> {
+                CartProduct cartProduct = new CartProduct();
+                Product product = new Product();
+                product.setId(entry.getKey());
+                cartProduct.setProduct(product);
+                cartProduct.setQuantity(entry.getValue());
+                return cartProduct;
+            })
+            .collect(Collectors.toSet());
 
+        cart.setCartProducts(cartProducts);
         return cart;
     }
 
@@ -59,8 +67,6 @@ public class CartController {
         return ResponseEntity.ok(convertToDTO(createdCart));
     }
     
-
-
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CartDTO> getCartById(@PathVariable Long id) {
@@ -80,15 +86,27 @@ public class CartController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CartDTO> updateCart(@PathVariable Long id, @RequestBody CartDTO cartDTO) {
-        Cart cart = convertToEntity(cartDTO);
-        Cart updatedCart = cartService.updateCart(id, cart);
-        return ResponseEntity.ok(convertToDTO(updatedCart));
+    public ResponseEntity<?> updateCart(@PathVariable Long id, @RequestBody CartDTO cartDTO) {
+        try {
+            Cart cart = convertToEntity(cartDTO);
+            Cart updatedCart = cartService.updateCart(id, cart);
+            return ResponseEntity.ok(convertToDTO(updatedCart));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteCart(@PathVariable Long id) {
+        cartService.deleteCart(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/restore-stock")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteCartAndRestoreStock(@PathVariable Long id) {
         cartService.deleteCart(id);
         return ResponseEntity.noContent().build();
     }
