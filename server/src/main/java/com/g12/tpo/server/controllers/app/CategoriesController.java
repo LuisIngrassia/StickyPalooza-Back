@@ -29,7 +29,6 @@ public class CategoriesController {
     @Autowired
     private CategoryService categoryService;
 
-    // Convert Category to CategoryDTO
     private CategoryDTO convertToDTO(Category category) {
         return CategoryDTO.builder()
             .id(category.getId())
@@ -37,7 +36,6 @@ public class CategoriesController {
             .build();
     }
 
-    // Convert CategoryDTO to Category
     private Category convertToEntity(CategoryDTO dto) {
         Category category = new Category();
         category.setId(dto.getId());

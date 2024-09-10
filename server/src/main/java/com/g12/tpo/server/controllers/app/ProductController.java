@@ -25,7 +25,6 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    // Convert Product to ProductDTO
     private ProductDTO convertToDTO(Product product) {
         return ProductDTO.builder()
             .id(product.getId())
@@ -33,12 +32,10 @@ public class ProductController {
             .description(product.getDescription())
             .price(product.getPrice())
             .stockQuantity(product.getStockQuantity())
-            .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)  // Incluye categoryId
+            .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
             .build();
     }
 
-
-    // Convert ProductDTO to Product
     private Product convertToEntity(ProductDTO productDTO) {
         Product product = new Product();
         product.setId(productDTO.getId());
@@ -54,7 +51,6 @@ public class ProductController {
         return product;
     }
 
-    // Get all products
     @GetMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -65,7 +61,6 @@ public class ProductController {
         return ResponseEntity.ok(productDTOs);
     }
 
-    // Get product by ID
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
@@ -77,7 +72,6 @@ public class ProductController {
         }
     }
 
-    // Create product
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
@@ -86,8 +80,6 @@ public class ProductController {
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
 
-    
-    // Update product
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
@@ -96,7 +88,6 @@ public class ProductController {
         return ResponseEntity.ok(convertToDTO(updatedProduct));
     }
 
-    // Delete product
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {

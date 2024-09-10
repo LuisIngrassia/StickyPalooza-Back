@@ -21,7 +21,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Convert User to UserDTO
     private UserDTO convertToDTO(User user) {
         return UserDTO.builder()
             .id(user.getId())
@@ -36,7 +35,6 @@ public class UserController {
             .build();
     }
 
-    // Convert UserDTO to User
     private User convertToEntity(UserDTO dto) {
         User user = new User();
         user.setId(dto.getId());

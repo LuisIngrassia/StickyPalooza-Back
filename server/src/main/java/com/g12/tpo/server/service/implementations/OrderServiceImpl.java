@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.g12.tpo.server.entity.Order;
 import com.g12.tpo.server.entity.Bill;
-import com.g12.tpo.server.entity.User; // Asegúrate de tener la entidad User
+import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.OrderRepository;
 import com.g12.tpo.server.repository.BillRepository;
-import com.g12.tpo.server.repository.UserRepository; // Asegúrate de tener el repositorio UserRepository
+import com.g12.tpo.server.repository.UserRepository;
 import com.g12.tpo.server.service.interfaces.OrderService;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class OrderServiceImpl implements OrderService {
     private BillRepository billRepository;
 
     @Autowired
-    private UserRepository userRepository; // Asegúrate de tener el repositorio UserRepository
+    private UserRepository userRepository;
 
     @Override
     public Order createOrder(Order order) {
@@ -57,13 +57,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = getOrderById(id).orElseThrow(() -> new RuntimeException("Order not found"));
         order.setOrderDate(orderDetails.getOrderDate());
         order.setTotalAmount(orderDetails.getTotalAmount());
-        // Actualizar user si está presente en los detalles
+
         if (orderDetails.getUser() != null) {
             User user = userRepository.findById(orderDetails.getUser().getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             order.setUser(user);
         }
-        // Actualizar bill si está presente en los detalles
+
         if (orderDetails.getBill() != null) {
             Bill bill = billRepository.findById(orderDetails.getBill().getId())
                     .orElseThrow(() -> new RuntimeException("Bill not found"));

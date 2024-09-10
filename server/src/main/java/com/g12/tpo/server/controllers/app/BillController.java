@@ -31,10 +31,9 @@ public class BillController {
     private ProductService productService;
 
     @Autowired
-    private UserService userService; // Asegúrate de inyectar UserService
+    private UserService userService;
 
     private Bill convertToEntity(BillDTO dto) {
-        // Cargar usuario desde UserService
         User user = userService.getUserById(dto.getUserId())
             .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
 
@@ -60,7 +59,6 @@ public class BillController {
 
         Bill bill = convertToEntity(billDTO);
 
-        // Obtener productos desde el ProductService
         Set<Product> products = billDTO.getProductIds().stream()
             .map(productId -> {
                 try {
@@ -73,17 +71,14 @@ public class BillController {
         
         bill.setProducts(products);
 
-        // Calcular totalAmount
         BigDecimal totalAmount = products.stream()
             .map(Product::getPrice)
-            .filter(Objects::nonNull) // Filtrar nulls para evitar NullPointerException
+            .filter(Objects::nonNull) 
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         bill.setTotalAmount(totalAmount);
 
-        // Crear la factura
         Bill createdBill = billService.createBill(bill);
 
-        // Convertir la entidad de vuelta a DTO
         return ResponseEntity.ok(convertToDTO(createdBill));
     }
 

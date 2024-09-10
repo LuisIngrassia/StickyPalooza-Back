@@ -30,7 +30,7 @@ public class OrderController {
     private BillService billService;
 
     @Autowired
-    private UserRepository userRepository; // Asegúrate de inyectar UserRepository
+    private UserRepository userRepository;
 
     private OrderDTO convertToDTO(Order order) {
         return OrderDTO.builder()
@@ -61,7 +61,6 @@ public class OrderController {
         User user = userRepository.findById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
     
-        // Usando el patrón Builder para crear la instancia de Order
         Order order = Order.builder()
                 .id(orderDTO.getId())
                 .orderDate(orderDTO.getOrderDate() != null ? orderDTO.getOrderDate() : new Date())
