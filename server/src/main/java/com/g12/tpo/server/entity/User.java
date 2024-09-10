@@ -2,6 +2,7 @@ package com.g12.tpo.server.entity;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,16 +21,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String email;
-
     private String name;
-
     private String password;
-
     private String firstName;
 
     @Column(nullable = false, unique = true)
@@ -76,5 +75,17 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id != null && id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

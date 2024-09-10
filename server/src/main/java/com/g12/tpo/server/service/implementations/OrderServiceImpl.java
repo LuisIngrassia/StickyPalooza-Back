@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderProductRepository orderProductRepository;
 
     @Autowired
-    private CartRepository cartRepository;  // Agregamos el CartRepository para acceder al carrito
+    private CartRepository cartRepository;
 
     @Transactional
     @Override
@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         
         User user = userService.getUserById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-    
+
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         Order order = Order.builder()
@@ -58,26 +58,28 @@ public class OrderServiceImpl implements OrderService {
                 .orderProducts(new HashSet<>())
                 .totalAmount(totalAmount)
                 .build();
-    
+
         for (Map.Entry<Long, Integer> entry : orderDTO.getProductQuantities().entrySet()) {
             Long productId = entry.getKey();
             Integer quantity = entry.getValue();
-    
+
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new RuntimeException("Product not found"));
-    
-            OrderProduct orderProduct = new OrderProduct();
-            orderProduct.setOrder(order);
-            orderProduct.setProduct(product);
-            orderProduct.setQuantity(quantity);
-    
-            orderProductRepository.save(orderProduct);
-    
-            productRepository.save(product);
-    
+
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .order(order)  // The order should be set before adding to the collection
+                    .product(product)
+                    .quantity(quantity)
+                    .build();
+
+            // Add to the order's set of orderProducts
+            order.getOrderProducts().add(orderProduct);
+
+            // Calculate total amount
             totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
         }
-    
+
+        // Set total amount and save the order
         order.setTotalAmount(totalAmount);
         return orderRepository.save(order);
     }
@@ -85,50 +87,48 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order createOrderFromCart(Long cartId) {
-        
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
-
+    
         Order order = Order.builder()
                 .user(cart.getUser())
                 .orderDate(new Date())
                 .orderProducts(new HashSet<>())
-                .totalAmount(BigDecimal.ZERO) 
+                .totalAmount(BigDecimal.ZERO)
                 .build();
+    
 
-        BigDecimal totalAmount = BigDecimal.ZERO;
-
-        // Procesar los productos del carrito
         for (CartProduct cartProduct : cart.getCartProducts()) {
+
             Product product = cartProduct.getProduct();
             int quantity = cartProduct.getQuantity();
-            BigDecimal productTotalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
 
-            // Crear OrderProduct basado en el CartProduct
+            BigDecimal productTotalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+    
             OrderProduct orderProduct = OrderProduct.builder()
                     .order(order)
                     .product(product)
                     .quantity(quantity)
                     .build();
-
-            // Guardar el OrderProduct
-            orderProductRepository.save(orderProduct);
+    
             order.getOrderProducts().add(orderProduct);
-
-            // Sumar el precio del producto al total de la orden
+    
             totalAmount = totalAmount.add(productTotalPrice);
         }
-
-        // Actualizar el total en la orden
+    
         order.setTotalAmount(totalAmount);
+    
         Order savedOrder = orderRepository.save(order);
 
-        // Limpiar los productos del carrito (pero no eliminar el carrito)
         cart.getCartProducts().clear();
         cartRepository.save(cart);
-
+    
         return savedOrder;
     }
+    
 
     @Override
     public Order getOrderById(Long id) {
@@ -146,15 +146,15 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(Long id) {
         Order order = getOrderById(id);
 
-        // Restaurar el stock de los productos de la orden
+        // Restore product stock
         for (OrderProduct orderProduct : order.getOrderProducts()) {
             Product product = orderProduct.getProduct();
             int quantity = orderProduct.getQuantity();
-            product.setStockQuantity(product.getStockQuantity() + quantity);  // Devolver el stock
+            product.setStockQuantity(product.getStockQuantity() + quantity);
             productRepository.save(product);
         }
 
-        // Eliminar la orden
+        // Delete the order
         orderRepository.deleteById(id);
     }
 }

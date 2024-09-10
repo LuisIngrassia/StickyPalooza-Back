@@ -1,12 +1,13 @@
 package com.g12.tpo.server.entity;
 
+import java.util.Objects;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Entity
 @Data
@@ -26,4 +27,17 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartProduct> cartProducts;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cart cart = (Cart) o;
+        return id != null && id.equals(cart.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

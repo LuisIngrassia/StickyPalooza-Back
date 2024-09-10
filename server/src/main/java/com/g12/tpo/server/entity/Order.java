@@ -1,14 +1,15 @@
 package com.g12.tpo.server.entity;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Set;
 
 @Entity
 @Data
@@ -34,4 +35,17 @@ public class Order {
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return id != null && id.equals(order.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

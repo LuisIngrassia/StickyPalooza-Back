@@ -1,5 +1,7 @@
 package com.g12.tpo.server.entity;
 
+import java.util.Objects;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +30,17 @@ public class OrderProduct {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderProduct that = (OrderProduct) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
