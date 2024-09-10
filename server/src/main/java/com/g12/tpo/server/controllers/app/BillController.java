@@ -1,6 +1,5 @@
 package com.g12.tpo.server.controllers.app;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,10 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.g12.tpo.server.dto.BillDTO;
-import com.g12.tpo.server.dto.ProductDTO;
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.BillProduct;
-import com.g12.tpo.server.entity.PaymentMethod;
 import com.g12.tpo.server.entity.Order;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.BillService;

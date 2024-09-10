@@ -11,7 +11,6 @@ import com.g12.tpo.server.entity.OrderProduct;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.CartRepository;
-import com.g12.tpo.server.repository.OrderProductRepository;
 import com.g12.tpo.server.repository.OrderRepository;
 import com.g12.tpo.server.repository.ProductRepository;
 import com.g12.tpo.server.service.interfaces.OrderService;
@@ -37,8 +36,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private OrderProductRepository orderProductRepository;
 
     @Autowired
     private CartRepository cartRepository;
