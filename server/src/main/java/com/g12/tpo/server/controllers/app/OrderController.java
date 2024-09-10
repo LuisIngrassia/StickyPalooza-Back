@@ -29,9 +29,11 @@ public class OrderController {
             ));
 
         return OrderDTO.builder()
+            .id(order.getId())
             .userId(order.getUser() != null ? order.getUser().getId() : null)
             .orderDate(order.getOrderDate())
             .productQuantities(productQuantities)
+            .totalAmount(order.getTotalAmount())
             .build();
     }
 

@@ -89,12 +89,11 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        // Crear la orden para el usuario del carrito
         Order order = Order.builder()
                 .user(cart.getUser())
                 .orderDate(new Date())
-                .orderProducts(new HashSet<>()) // Inicialmente vacía
-                .totalAmount(BigDecimal.ZERO) // Inicializamos el total
+                .orderProducts(new HashSet<>())
+                .totalAmount(BigDecimal.ZERO) 
                 .build();
 
         BigDecimal totalAmount = BigDecimal.ZERO;
