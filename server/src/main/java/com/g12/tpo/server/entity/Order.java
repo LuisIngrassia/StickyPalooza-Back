@@ -1,7 +1,10 @@
+
 package com.g12.tpo.server.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.Date;
 //import java.util.Set;
 
@@ -17,12 +20,16 @@ public class Order {
     private Date orderDate;
 
     @Column(name = "total_price", nullable = false)
-    private Double totalPrice;
+    private BigDecimal totalAmount;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    // private Set<Product> products;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bill_id")
+    private Bill bill;
+
 }
+
+

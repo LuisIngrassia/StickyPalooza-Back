@@ -31,7 +31,7 @@ public class Bill {
     @JoinColumn(name = "bill_id")
     private Set<Product> products;
 
-    @Column(nullable = false)
+    @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
 }

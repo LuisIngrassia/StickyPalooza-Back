@@ -2,9 +2,12 @@ package com.g12.tpo.server.service.implementations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.g12.tpo.server.entity.Order;
+import com.g12.tpo.server.entity.Bill;
+import com.g12.tpo.server.entity.User; // Asegúrate de tener la entidad User
 import com.g12.tpo.server.repository.OrderRepository;
+import com.g12.tpo.server.repository.BillRepository;
+import com.g12.tpo.server.repository.UserRepository; // Asegúrate de tener el repositorio UserRepository
 import com.g12.tpo.server.service.interfaces.OrderService;
 
 import java.util.List;
@@ -16,8 +19,26 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private BillRepository billRepository;
+
+    @Autowired
+    private UserRepository userRepository; // Asegúrate de tener el repositorio UserRepository
+
     @Override
     public Order createOrder(Order order) {
+        
+        if (order.getBill() != null) {
+            Bill bill = billRepository.findById(order.getBill().getId())
+                    .orElseThrow(() -> new RuntimeException("Bill not found"));
+            order.setTotalAmount(bill.getTotalAmount());
+        }
+        // Buscar User por userId
+        if (order.getUser() != null) {
+            User user = userRepository.findById(order.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            order.setUser(user);
+        }
         return orderRepository.save(order);
     }
 
@@ -35,9 +56,19 @@ public class OrderServiceImpl implements OrderService {
     public Order updateOrder(Long id, Order orderDetails) {
         Order order = getOrderById(id).orElseThrow(() -> new RuntimeException("Order not found"));
         order.setOrderDate(orderDetails.getOrderDate());
-        order.setTotalPrice(orderDetails.getTotalPrice());
-        // order.setProducts(orderDetails.getProducts()); // Descomentar si es necesario
-        order.setUser(orderDetails.getUser());
+        order.setTotalAmount(orderDetails.getTotalAmount());
+        // Actualizar user si está presente en los detalles
+        if (orderDetails.getUser() != null) {
+            User user = userRepository.findById(orderDetails.getUser().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            order.setUser(user);
+        }
+        // Actualizar bill si está presente en los detalles
+        if (orderDetails.getBill() != null) {
+            Bill bill = billRepository.findById(orderDetails.getBill().getId())
+                    .orElseThrow(() -> new RuntimeException("Bill not found"));
+            order.setBill(bill);
+        }
         return orderRepository.save(order);
     }
 
