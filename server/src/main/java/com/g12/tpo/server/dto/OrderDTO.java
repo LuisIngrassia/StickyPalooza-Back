@@ -10,7 +10,6 @@ import java.util.Map;
 @Data
 @Builder
 public class OrderDTO {
-    private Long id;
     private Long userId;
     private Date orderDate;
     private Map<Long, Integer> productQuantities;  

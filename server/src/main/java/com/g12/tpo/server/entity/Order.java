@@ -32,6 +32,6 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderProduct> orderProducts;
 
-    @Column(name = "total_amount", nullable = false)
+    @Column(name = "total_amount")
     private BigDecimal totalAmount;
 }
