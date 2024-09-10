@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.g12.tpo.server.dto.OrderDTO;
+import com.g12.tpo.server.entity.Cart;
+import com.g12.tpo.server.entity.CartProduct;
 import com.g12.tpo.server.entity.Order;
 import com.g12.tpo.server.entity.OrderProduct;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.User;
+import com.g12.tpo.server.repository.CartRepository;
 import com.g12.tpo.server.repository.OrderProductRepository;
 import com.g12.tpo.server.repository.OrderRepository;
 import com.g12.tpo.server.repository.ProductRepository;
@@ -37,6 +40,10 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderProductRepository orderProductRepository;
 
+    @Autowired
+    private CartRepository cartRepository;  // Agregamos el CartRepository para acceder al carrito
+
+    @Transactional
     @Override
     public Order createOrder(OrderDTO orderDTO) {
         
@@ -74,7 +81,55 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
         return orderRepository.save(order);
     }
-    
+
+    @Transactional
+    @Override
+    public Order createOrderFromCart(Long cartId) {
+        
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        // Crear la orden para el usuario del carrito
+        Order order = Order.builder()
+                .user(cart.getUser())
+                .orderDate(new Date())
+                .orderProducts(new HashSet<>()) // Inicialmente vacía
+                .totalAmount(BigDecimal.ZERO) // Inicializamos el total
+                .build();
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        // Procesar los productos del carrito
+        for (CartProduct cartProduct : cart.getCartProducts()) {
+            Product product = cartProduct.getProduct();
+            int quantity = cartProduct.getQuantity();
+            BigDecimal productTotalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+
+            // Crear OrderProduct basado en el CartProduct
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .order(order)
+                    .product(product)
+                    .quantity(quantity)
+                    .build();
+
+            // Guardar el OrderProduct
+            orderProductRepository.save(orderProduct);
+            order.getOrderProducts().add(orderProduct);
+
+            // Sumar el precio del producto al total de la orden
+            totalAmount = totalAmount.add(productTotalPrice);
+        }
+
+        // Actualizar el total en la orden
+        order.setTotalAmount(totalAmount);
+        Order savedOrder = orderRepository.save(order);
+
+        // Limpiar los productos del carrito (pero no eliminar el carrito)
+        cart.getCartProducts().clear();
+        cartRepository.save(cart);
+
+        return savedOrder;
+    }
 
     @Override
     public Order getOrderById(Long id) {
@@ -92,13 +147,15 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(Long id) {
         Order order = getOrderById(id);
 
+        // Restaurar el stock de los productos de la orden
         for (OrderProduct orderProduct : order.getOrderProducts()) {
             Product product = orderProduct.getProduct();
             int quantity = orderProduct.getQuantity();
-            product.setStockQuantity(product.getStockQuantity() + quantity);  // Devolver stock
+            product.setStockQuantity(product.getStockQuantity() + quantity);  // Devolver el stock
             productRepository.save(product);
         }
 
+        // Eliminar la orden
         orderRepository.deleteById(id);
     }
 }

@@ -35,10 +35,10 @@ public class OrderController {
             .build();
     }
 
-    @PostMapping
+    @PostMapping("/fromCart/{cartId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
-        Order createdOrder = orderService.createOrder(orderDTO);
+    public ResponseEntity<OrderDTO> createOrderFromCart(@PathVariable Long cartId) {
+        Order createdOrder = orderService.createOrderFromCart(cartId);
         return ResponseEntity.ok(convertToDTO(createdOrder));
     }
     
@@ -59,7 +59,6 @@ public class OrderController {
         return ResponseEntity.ok(orderDTOs);
     }
 
-    // Deberia ser que la Orden se cambie a "Inactiva" en vez de borrarse, refactorear
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
