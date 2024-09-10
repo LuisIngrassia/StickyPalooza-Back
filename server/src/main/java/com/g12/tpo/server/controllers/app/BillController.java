@@ -32,20 +32,12 @@ public class BillController {
     private OrderService orderService;
 
     @Autowired
-<<<<<<< HEAD
-    private UserService userService;
-
-    private Bill convertToEntity(BillDTO dto) {
-        User user = userService.getUserById(dto.getUserId())
-            .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
-=======
     private ProductRepository productRepository;
 
     private Bill convertToEntity(BillDTO dto, List<ProductDTO> productDTOs) {
         // Obtener la orden
         Order order = orderService.getOrderById(dto.getOrderId())
             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + dto.getOrderId()));
->>>>>>> cc9e352 (BILL TERMINADO (FALTA PROBAR), LUISPA HACE ORDER GRACIAS PORFA)
 
         // Crear la instancia de Bill
         Bill bill = new Bill();
@@ -81,38 +73,6 @@ public class BillController {
             .build();
     }
 
-<<<<<<< HEAD
-    @PostMapping
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<BillDTO> createBill(@RequestBody BillDTO billDTO) {
-
-        Bill bill = convertToEntity(billDTO);
-
-        Set<Product> products = billDTO.getProductIds().stream()
-            .map(productId -> {
-                try {
-                    return productService.getProductById(productId);
-                } catch (ProductNotFoundException e) {
-                    throw new RuntimeException("Product not found with ID: " + productId, e);
-                }
-            })
-            .collect(Collectors.toSet());
-        
-        bill.setProducts(products);
-
-        BigDecimal totalAmount = products.stream()
-            .map(Product::getPrice)
-            .filter(Objects::nonNull) 
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-        bill.setTotalAmount(totalAmount);
-
-        Bill createdBill = billService.createBill(bill);
-
-        return ResponseEntity.ok(convertToDTO(createdBill));
-    }
-
-=======
->>>>>>> cc9e352 (BILL TERMINADO (FALTA PROBAR), LUISPA HACE ORDER GRACIAS PORFA)
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<BillDTO> getBillById(@PathVariable Long id) {

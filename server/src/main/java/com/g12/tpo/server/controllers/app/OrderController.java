@@ -52,12 +52,8 @@ public class OrderController {
         // Obtener usuario
         User user = userRepository.findById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-<<<<<<< HEAD
-    
-=======
 
         // Crear instancia de Order
->>>>>>> cc9e352 (BILL TERMINADO (FALTA PROBAR), LUISPA HACE ORDER GRACIAS PORFA)
         Order order = Order.builder()
                 .id(orderDTO.getId())
                 .orderDate(orderDTO.getOrderDate() != null ? orderDTO.getOrderDate() : new Date())
