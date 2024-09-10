@@ -34,7 +34,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill updateBill(Long id, Bill billDetails) {
         Bill bill = getBillById(id);
-        bill.setProducts(billDetails.getProducts());
+        bill.setBillProducts(billDetails.getBillProducts());
         bill.setTotalAmount(billDetails.getTotalAmount());
         bill.setUser(billDetails.getUser());
         return billRepository.save(bill);

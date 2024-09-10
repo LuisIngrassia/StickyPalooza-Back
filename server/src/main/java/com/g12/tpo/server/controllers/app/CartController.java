@@ -5,8 +5,6 @@ import com.g12.tpo.server.dto.CartDTO;
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.entity.CartProduct;
-import com.g12.tpo.server.entity.Product;
-import com.g12.tpo.server.entity.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,28 +34,6 @@ public class CartController {
             .userId(cart.getUser() != null ? cart.getUser().getId() : null)
             .productQuantities(productQuantities)
             .build();
-    }
-
-    private Cart convertToEntity(CartDTO dto) {
-        Cart cart = new Cart();
-        cart.setId(dto.getId());
-        User user = new User();
-        user.setId(dto.getUserId());
-        cart.setUser(user);
-
-        Set<CartProduct> cartProducts = dto.getProductQuantities().entrySet().stream()
-            .map(entry -> {
-                CartProduct cartProduct = new CartProduct();
-                Product product = new Product();
-                product.setId(entry.getKey());
-                cartProduct.setProduct(product);
-                cartProduct.setQuantity(entry.getValue());
-                return cartProduct;
-            })
-            .collect(Collectors.toSet());
-
-        cart.setCartProducts(cartProducts);
-        return cart;
     }
 
     @PostMapping

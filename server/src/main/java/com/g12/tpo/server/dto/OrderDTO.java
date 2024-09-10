@@ -8,10 +8,11 @@ import lombok.Data;
 @Builder
 @Data
 public class OrderDTO {
-    
+
     private Long id;
     private Date orderDate;
-    private BigDecimal totalAmount; 
+    private BigDecimal totalAmount;
     private Long userId;
-    private Long billId; 
+    private Long billId;
+    private String paymentMethod; 
 }

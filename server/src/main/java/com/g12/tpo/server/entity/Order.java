@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
-//import java.util.Set;
-
+import java.util.Set;
 
 @Entity
 @Data
@@ -25,6 +24,9 @@ public class Order {
     @Column(name = "order_date", nullable = false)
     private Date orderDate;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartProduct> cartProducts;
+    
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalAmount;
 
@@ -32,7 +34,4 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bill_id")
-    private Bill bill;
 }

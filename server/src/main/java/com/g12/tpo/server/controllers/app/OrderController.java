@@ -12,25 +12,30 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.g12.tpo.server.dto.OrderDTO;
-import com.g12.tpo.server.entity.Bill;
+import com.g12.tpo.server.dto.ProductDTO;
 import com.g12.tpo.server.entity.Order;
+import com.g12.tpo.server.entity.OrderProduct;
+import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.entity.User;
-import com.g12.tpo.server.service.interfaces.BillService;
 import com.g12.tpo.server.service.interfaces.OrderService;
 import com.g12.tpo.server.repository.UserRepository;
+import com.g12.tpo.server.repository.ProductRepository;
 
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
-
     @Autowired
     private OrderService orderService;
 
     @Autowired
-    private BillService billService;
+    private UserRepository userRepository;
 
     @Autowired
+<<<<<<< HEAD
     private UserRepository userRepository;
+=======
+    private ProductRepository productRepository;
+>>>>>>> cc9e352 (BILL TERMINADO (FALTA PROBAR), LUISPA HACE ORDER GRACIAS PORFA)
 
     private OrderDTO convertToDTO(Order order) {
         return OrderDTO.builder()
@@ -38,38 +43,47 @@ public class OrderController {
             .orderDate(order.getOrderDate())
             .totalAmount(order.getTotalAmount())
             .userId(order.getUser() != null ? order.getUser().getId() : null)
-            .billId(order.getBill() != null ? order.getBill().getId() : null)
             .build();
     }
-    
-    // private Order convertToEntity(OrderDTO dto) {
-    //     Order order = new Order();
-    //     order.setId(dto.getId());
-    //     order.setOrderDate(dto.getOrderDate() != null ? dto.getOrderDate() : new Date()); // Usa la fecha proporcionada o la fecha actual
-    //     return order;
-    // }
 
     @PostMapping
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
-        Bill bill = billService.getBillById(orderDTO.getBillId());
-    
-        if (bill == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO, @RequestBody List<ProductDTO> productDTOs) {
+        // Obtener usuario
         User user = userRepository.findById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+<<<<<<< HEAD
     
+=======
+
+        // Crear instancia de Order
+>>>>>>> cc9e352 (BILL TERMINADO (FALTA PROBAR), LUISPA HACE ORDER GRACIAS PORFA)
         Order order = Order.builder()
                 .id(orderDTO.getId())
                 .orderDate(orderDTO.getOrderDate() != null ? orderDTO.getOrderDate() : new Date())
-                .totalAmount(bill.getTotalAmount())
-                .bill(bill)
+                .totalAmount(orderDTO.getTotalAmount())
                 .user(user)
                 .build();
-    
+
+        // Guardar orden
         Order createdOrder = orderService.createOrder(order);
+
+        // Asociar productos a la orden
+        List<OrderProduct> orderProducts = productDTOs.stream()
+                .map(productDTO -> {
+                    Product product = productRepository.findById(productDTO.getId())
+                            .orElseThrow(() -> new RuntimeException("Product not found"));
+                    return OrderProduct.builder()
+                            .order(createdOrder)
+                            .product(product)
+                            .quantity(productDTO.getQuantity())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // Guardar los productos de la orden (esto se debe hacer en el servicio)
+        orderService.saveOrderProducts(orderProducts);
+
         return new ResponseEntity<>(convertToDTO(createdOrder), HttpStatus.CREATED);
     }
 
