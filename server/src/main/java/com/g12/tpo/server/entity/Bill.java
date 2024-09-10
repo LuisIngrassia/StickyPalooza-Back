@@ -2,7 +2,9 @@ package com.g12.tpo.server.entity;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.Date;
 
+import java.util.Objects;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +35,11 @@ public class Bill {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false) // Relación con Order
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
+
+    @Column(name = "bill_date", nullable = false)
+    private Date billDate;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -49,5 +54,18 @@ public class Bill {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bill bill = (Bill) o;
+        return id != null && id.equals(bill.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
 

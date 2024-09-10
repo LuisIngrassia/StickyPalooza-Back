@@ -34,41 +34,59 @@ public class BillController {
     @Autowired
     private ProductRepository productRepository;
 
-    private Bill convertToEntity(BillDTO dto, List<ProductDTO> productDTOs) {
+    // Convert BillDTO to Bill entity with associated products
+    private Bill convertToEntity(BillDTO dto) {
 
-        Order order = orderService.getOrderById(dto.getOrderId());
+        // Get the order using the order ID
+        Order order = orderService.getOrderById(dto.getId());
 
         Bill bill = new Bill();
         bill.setOrder(order);
+        bill.setBillDate(dto.getBillDate());
         bill.setTotalAmount(dto.getTotalAmount());
-        bill.setPaymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()));
 
-        Set<BillProduct> billProducts = productDTOs.stream()
-                .map(productDTO -> {
-                    Product product = productRepository.findById(productDTO.getId())
+        // Create BillProducts from the productQuantities in BillDTO
+        Set<BillProduct> billProducts = dto.getProductQuantities().entrySet().stream()
+                .map(entry -> {
+                    Long productId = entry.getKey();
+                    int quantity = entry.getValue();
+
+                    Product product = productRepository.findById(productId)
                             .orElseThrow(() -> new RuntimeException("Product not found"));
+
                     BillProduct billProduct = new BillProduct();
                     billProduct.setBill(bill);
                     billProduct.setProduct(product);
-                    billProduct.setQuantity(productDTO.getStockQuantity());
+                    billProduct.setQuantity(quantity);
+
                     return billProduct;
                 })
-                .collect(Collectors.toCollection(HashSet::new)); 
+                .collect(Collectors.toSet());
 
         bill.setBillProducts(billProducts);
 
         return bill;
     }
 
+    // Convert Bill entity to BillDTO
     private BillDTO convertToDTO(Bill bill) {
         return BillDTO.builder()
-            .id(bill.getId())
-            .orderId(bill.getOrder().getId())
-            .totalAmount(bill.getTotalAmount())
-            .paymentMethod(bill.getPaymentMethod().name())
-            .build();
+                .id(bill.getId())
+                .userId(bill.getUser().getId())
+                .billDate(bill.getBillDate())
+                .totalAmount(bill.getTotalAmount())
+                .productQuantities(
+                        bill.getBillProducts().stream().collect(
+                                Collectors.toMap(
+                                        bp -> bp.getProduct().getId(),
+                                        BillProduct::getQuantity
+                                )
+                        )
+                )
+                .build();
     }
 
+    // GET method to fetch a Bill by ID
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<BillDTO> getBillById(@PathVariable Long id) {
@@ -76,6 +94,7 @@ public class BillController {
         return ResponseEntity.ok(convertToDTO(bill));
     }
 
+    // GET all bills (ADMIN only)
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<BillDTO>> getAllBills() {
@@ -86,22 +105,24 @@ public class BillController {
         return ResponseEntity.ok(billDTOs);
     }
 
-    @PostMapping
+    // POST method to convert an order to a bill
+    @PostMapping("/convertOrderToBill/{orderId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<BillDTO> createBill(@RequestBody BillDTO billDTO, @RequestBody List<ProductDTO> productDTOs) {
-        Bill bill = convertToEntity(billDTO, productDTOs);
-        Bill createdBill = billService.createBill(bill);
-        return ResponseEntity.ok(convertToDTO(createdBill));
+    public ResponseEntity<BillDTO> convertOrderToBill(@PathVariable Long orderId) {
+        Bill bill = billService.convertOrderToBill(orderId);
+        return ResponseEntity.ok(convertToDTO(bill));
     }
 
+    // PUT method to update a Bill
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<BillDTO> updateBill(@PathVariable Long id, @RequestBody BillDTO billDTO, @RequestBody List<ProductDTO> productDTOs) {
-        Bill bill = convertToEntity(billDTO, productDTOs);
+    public ResponseEntity<BillDTO> updateBill(@PathVariable Long id, @RequestBody BillDTO billDTO) {
+        Bill bill = convertToEntity(billDTO);
         Bill updatedBill = billService.updateBill(id, bill);
         return ResponseEntity.ok(convertToDTO(updatedBill));
     }
 
+    // DELETE method to remove a Bill by ID
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
