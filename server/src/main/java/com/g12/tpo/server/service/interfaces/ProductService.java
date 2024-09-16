@@ -1,5 +1,6 @@
 package com.g12.tpo.server.service.interfaces;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.g12.tpo.server.entity.Product;
@@ -19,4 +20,6 @@ public interface ProductService {
     Product updateProductImageUrl(Long productId, String imageUrl);
 
     List<Product> getProductsByName(String name);
+    
+    List<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice);;
 }

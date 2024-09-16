@@ -1,5 +1,6 @@
 package com.g12.tpo.server.controllers.app;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -122,4 +123,16 @@ public class ProductController {
                                                .collect(Collectors.toList());
         return ResponseEntity.ok(productDTOs);
     }
+
+    @GetMapping("/byPrice")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(
+        @RequestParam BigDecimal minPrice, 
+        @RequestParam BigDecimal maxPrice) {
+            List<Product> products = productService.getProductsByPriceRange(minPrice, maxPrice);
+            List<ProductDTO> productDTOs = products.stream()
+                                           .map(this::convertToDTO)
+                                           .collect(Collectors.toList());
+    return ResponseEntity.ok(productDTOs);
+}
 }
