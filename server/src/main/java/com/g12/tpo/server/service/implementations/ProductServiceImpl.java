@@ -61,4 +61,10 @@ public class ProductServiceImpl implements ProductService {
         product.setImageUrl(imageUrl);
         return productRepository.save(product); 
     }
+
+    @Override
+    public List<Product> getProductsByName(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name);
+    }
+
 }

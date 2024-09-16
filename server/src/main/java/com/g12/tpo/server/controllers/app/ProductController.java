@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.g12.tpo.server.dto.ProductDTO;
@@ -109,6 +110,16 @@ public class ProductController {
         String imageUrl = requestBody.get("imageUrl");
         Product product = productService.updateProductImageUrl(productId, imageUrl);
         ProductDTO productDTO = convertToDTO(product);  
-    return ResponseEntity.ok(productDTO);
-}
+        return ResponseEntity.ok(productDTO);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<List<ProductDTO>> getProductsByName(@RequestParam String name) {
+        List<Product> products = productService.getProductsByName(name);
+        List<ProductDTO> productDTOs = products.stream()
+                                               .map(this::convertToDTO)
+                                               .collect(Collectors.toList());
+        return ResponseEntity.ok(productDTOs);
+    }
 }
