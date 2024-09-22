@@ -39,4 +39,6 @@ public class Product {
 
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
+
+    // ADD DISCOUNT ENTITY
 }

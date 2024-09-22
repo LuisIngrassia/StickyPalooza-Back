@@ -52,17 +52,20 @@ public class BillServiceImpl implements BillService {
         return billRepository.save(bill);
     }
 
+    @Transactional
     @Override
     public Bill getBillById(Long id) {
         return billRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
     }
 
+    @Transactional
     @Override
     public List<Bill> getAllBills() {
         return billRepository.findAll();
     }
 
+    @Transactional
     @Override
     public Bill updateBill(Long id, Bill billDetails) {
         Bill bill = getBillById(id);
