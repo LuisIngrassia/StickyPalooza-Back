@@ -30,8 +30,9 @@ public class Product {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    // Store image URL here
+    @Column(name = "image")
+    private String image;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -40,5 +41,5 @@ public class Product {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
 
-    // ADD DISCOUNT ENTITY
+    //ADD DISCOUNT ENTITY
 }

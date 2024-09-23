@@ -2,27 +2,20 @@ package com.g12.tpo.server.controllers.app;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.g12.tpo.server.dto.ProductDTO;
 import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.CategoryService;
 import com.g12.tpo.server.service.interfaces.ProductService;
+import com.g12.tpo.server.service.implementations.ImagenesProdService;
 
 @RestController
 @RequestMapping("/products")
@@ -34,6 +27,9 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private ImagenesProdService fileUploadService;
+
     private ProductDTO convertToDTO(Product product) {
         return ProductDTO.builder()
             .id(product.getId())
@@ -42,7 +38,7 @@ public class ProductController {
             .price(product.getPrice())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-            .imageUrl(product.getImageUrl())
+            .image(product.getImage())
             .build();
     }
 
@@ -53,7 +49,7 @@ public class ProductController {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setStockQuantity(productDTO.getStockQuantity());
-        product.setImageUrl(productDTO.getImageUrl());
+        product.setImage(productDTO.getImage());
 
         Category category = categoryService.getCategoryById(productDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -106,13 +102,19 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    // REFACTOREAR - DEBE USAR LA FUNCION DE UPDATE PRODUCT PARA REALIZAR ESTA OPERACION
-    @PutMapping("/{productId}/image")
-    public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId, @RequestBody Map<String, String> requestBody) {
-        String imageUrl = requestBody.get("imageUrl");
-        Product product = productService.updateProductImageUrl(productId, imageUrl);
-        ProductDTO productDTO = convertToDTO(product);  
-        return ResponseEntity.ok(productDTO);
+    // Endpoint for handling image uploads and updating the image URL
+    @PostMapping("/{productId}/image")
+    public ResponseEntity<ProductDTO> uploadProductImage(@PathVariable Long productId, @RequestParam("image") MultipartFile imageFile) {
+        try {
+            
+            String image = fileUploadService.uploadImage(imageFile);
+
+            Product updatedProduct = productService.updateProductImage(productId, image);
+
+            return ResponseEntity.ok(convertToDTO(updatedProduct));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @GetMapping("/search")
@@ -134,6 +136,6 @@ public class ProductController {
             List<ProductDTO> productDTOs = products.stream()
                                            .map(this::convertToDTO)
                                            .collect(Collectors.toList());
-    return ResponseEntity.ok(productDTOs);
-}
+            return ResponseEntity.ok(productDTOs);
+    }
 }

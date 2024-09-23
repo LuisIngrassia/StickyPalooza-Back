@@ -19,7 +19,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-   
+
     @Override
     public Product createProduct(Product product) {
         return productRepository.save(product);
@@ -41,19 +41,18 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(Long id, Product productDetails) {
 
         Product product = getProductById(id);
-    
+
         Optional.ofNullable(productDetails.getName()).ifPresent(product::setName);
         Optional.ofNullable(productDetails.getDescription()).ifPresent(product::setDescription);
         Optional.ofNullable(productDetails.getPrice()).ifPresent(product::setPrice);
         Optional.ofNullable(productDetails.getCategory()).ifPresent(product::setCategory);
         Optional.ofNullable(productDetails.getStockQuantity()).ifPresent(product::setStockQuantity);
         
-        // MODIFY TO ADD URL
-        // Optional.ofNullable(productDetails.getPlaceholder()).ifPresent(product::placeholder);
-    
+        // Set image URL if provided
+        Optional.ofNullable(productDetails.getImage()).ifPresent(product::setImage);
+
         return productRepository.save(product);
     }
-    
 
     @Override
     public void deleteProduct(Long id) {
@@ -64,10 +63,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProductImageUrl(Long productId, String imageUrl) {
+    public Product updateProductImage(Long productId, String image) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found" + productId));
-        product.setImageUrl(imageUrl);
+        product.setImage(image);
         return productRepository.save(product); 
     }
 
