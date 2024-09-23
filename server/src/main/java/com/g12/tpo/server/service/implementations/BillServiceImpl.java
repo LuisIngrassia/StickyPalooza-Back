@@ -29,15 +29,17 @@ public class BillServiceImpl implements BillService {
 
     @Transactional
     @Override
-    public Bill convertOrderToBill(Long orderId) {
+    public Bill convertOrderToBill(Long orderId, PaymentMethod paymentMethod) {
         Order order = orderService.getOrderById(orderId);
-
+    
         Bill bill = new Bill();
         bill.setOrder(order);
-        bill.setBillDate(new Date()); 
+        bill.setBillDate(new Date());
         bill.setTotalAmount(order.getTotalAmount());
         bill.setUser(order.getUser());
-
+    
+        bill.setPaymentMethod(paymentMethod);
+    
         Set<BillProduct> billProducts = order.getOrderProducts().stream()
                 .map(orderProduct -> {
                     BillProduct billProduct = new BillProduct();
@@ -47,7 +49,7 @@ public class BillServiceImpl implements BillService {
                     return billProduct;
                 })
                 .collect(Collectors.toSet());
-
+    
         bill.setBillProducts(billProducts);
         return billRepository.save(bill);
     }
@@ -72,8 +74,11 @@ public class BillServiceImpl implements BillService {
         bill.setBillProducts(billDetails.getBillProducts());
         bill.setTotalAmount(billDetails.getTotalAmount());
         bill.setUser(billDetails.getUser());
+        bill.setPaymentMethod(billDetails.getPaymentMethod());
         return billRepository.save(bill);
     }
+    
+    
 
     @Override
     public void deleteBill(Long id) {

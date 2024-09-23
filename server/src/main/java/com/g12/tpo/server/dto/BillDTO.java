@@ -15,4 +15,5 @@ public class BillDTO {
     private Date billDate;
     private Map<Long, Integer> productQuantities;  
     private BigDecimal totalAmount;
+    private String paymentMethod;
 }

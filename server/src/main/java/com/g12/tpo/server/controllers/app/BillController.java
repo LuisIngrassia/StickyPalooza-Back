@@ -13,6 +13,7 @@ import com.g12.tpo.server.dto.BillDTO;
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.BillProduct;
 import com.g12.tpo.server.entity.Order;
+import com.g12.tpo.server.entity.PaymentMethod;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.BillService;
 import com.g12.tpo.server.service.interfaces.OrderService;
@@ -33,38 +34,40 @@ public class BillController {
 
     // Convert BillDTO to Bill entity with associated products
     private Bill convertToEntity(BillDTO dto) {
-
         // Get the order using the order ID
         Order order = orderService.getOrderById(dto.getId());
-
+    
         Bill bill = new Bill();
         bill.setOrder(order);
         bill.setBillDate(dto.getBillDate());
         bill.setTotalAmount(dto.getTotalAmount());
-
+        
+        // Convert string payment method to PaymentMethod enum
+        bill.setPaymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()));  // Add this line
+    
         // Create BillProducts from the productQuantities in BillDTO
         Set<BillProduct> billProducts = dto.getProductQuantities().entrySet().stream()
                 .map(entry -> {
                     Long productId = entry.getKey();
                     int quantity = entry.getValue();
-
+    
                     Product product = productRepository.findById(productId)
                             .orElseThrow(() -> new RuntimeException("Product not found"));
-
+    
                     BillProduct billProduct = new BillProduct();
                     billProduct.setBill(bill);
                     billProduct.setProduct(product);
                     billProduct.setQuantity(quantity);
-
+    
                     return billProduct;
                 })
                 .collect(Collectors.toSet());
-
+    
         bill.setBillProducts(billProducts);
-
+    
         return bill;
     }
-
+    
     // Convert Bill entity to BillDTO
     private BillDTO convertToDTO(Bill bill) {
         return BillDTO.builder()
@@ -105,8 +108,15 @@ public class BillController {
     // POST method to convert an order to a bill
     @PostMapping("/convertOrderToBill/{orderId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<BillDTO> convertOrderToBill(@PathVariable Long orderId) {
-        Bill bill = billService.convertOrderToBill(orderId);
+    public ResponseEntity<?> convertOrderToBill(@PathVariable Long orderId, @RequestParam String paymentMethod) {
+        PaymentMethod method;
+        try {
+            method = PaymentMethod.valueOf(paymentMethod.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+        
+        Bill bill = billService.convertOrderToBill(orderId, method); // This will now work correctly
         return ResponseEntity.ok(convertToDTO(bill));
     }
 
