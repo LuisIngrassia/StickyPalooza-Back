@@ -2,11 +2,13 @@ package com.g12.tpo.server.controllers.app;
 
 import com.g12.tpo.server.dto.AddProductToCartRequest;
 import com.g12.tpo.server.dto.CartDTO;
+
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.entity.CartProduct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -43,15 +45,21 @@ public class CartController {
         return ResponseEntity.ok(convertToDTO(createdCart));
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/{userId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CartDTO> getCartById(@PathVariable Long id) {
-        Cart cart = cartService.getCartById(id);
-        return ResponseEntity.ok(convertToDTO(cart));
+    public ResponseEntity<CartDTO> getCartById(@PathVariable Long id, @PathVariable Long userId) {
+    Cart cart = cartService.getCartByIdForUser(id, userId);
+
+    if (cart == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(null);
+    }
+    
+    return ResponseEntity.ok(convertToDTO(cart));
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<CartDTO>> getAllCarts() {
         List<Cart> carts = cartService.getAllCarts();
         List<CartDTO> cartDTOs = carts.stream()
@@ -76,13 +84,6 @@ public class CartController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteCart(@PathVariable Long id) {
-        cartService.deleteCart(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{id}/restore-stock")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Void> deleteCartAndRestoreStock(@PathVariable Long id) {
         cartService.deleteCart(id);
         return ResponseEntity.noContent().build();
     }

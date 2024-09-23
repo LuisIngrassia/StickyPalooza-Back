@@ -1,5 +1,6 @@
 package com.g12.tpo.server.service.implementations;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,10 +84,23 @@ public class CartServiceImpl implements CartService {
         return cartRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
     }
+    @Override
+    public Cart getCartByIdForUser(Long cartId, Long userId) {
+        Cart cart = cartRepository.findByCartId(cartId);
+
+        if (cart.getUser().getId() != userId){
+            return null;    
+        }
+
+        Hibernate.initialize(cart.getCartProducts()); 
+
+        return cart;
+    }
+    
 
     @Override
     public List<Cart> getAllCarts() {
-        return cartRepository.findAll();
-    }
+        return cartRepository.findAllWithCartProducts();
+    }    
 
 }

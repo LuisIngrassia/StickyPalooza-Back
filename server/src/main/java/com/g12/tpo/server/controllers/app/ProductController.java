@@ -91,13 +91,13 @@ public class ProductController {
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
         Product productDetails = convertToEntity(productDTO);
         Product updatedProduct = productService.updateProduct(id, productDetails);
         return ResponseEntity.ok(convertToDTO(updatedProduct));
-    }
+    }    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -106,6 +106,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    // REFACTOREAR - DEBE USAR LA FUNCION DE UPDATE PRODUCT PARA REALIZAR ESTA OPERACION
     @PutMapping("/{productId}/image")
     public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId, @RequestBody Map<String, String> requestBody) {
         String imageUrl = requestBody.get("imageUrl");

@@ -2,6 +2,7 @@ package com.g12.tpo.server.service.implementations;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,14 +39,21 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Product updateProduct(Long id, Product productDetails) {
+
         Product product = getProductById(id);
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setPrice(productDetails.getPrice());
-        product.setCategory(productDetails.getCategory());
-        product.setStockQuantity(productDetails.getStockQuantity());
+    
+        Optional.ofNullable(productDetails.getName()).ifPresent(product::setName);
+        Optional.ofNullable(productDetails.getDescription()).ifPresent(product::setDescription);
+        Optional.ofNullable(productDetails.getPrice()).ifPresent(product::setPrice);
+        Optional.ofNullable(productDetails.getCategory()).ifPresent(product::setCategory);
+        Optional.ofNullable(productDetails.getStockQuantity()).ifPresent(product::setStockQuantity);
+        
+        // MODIFY TO ADD URL
+        // Optional.ofNullable(productDetails.getPlaceholder()).ifPresent(product::placeholder);
+    
         return productRepository.save(product);
     }
+    
 
     @Override
     public void deleteProduct(Long id) {

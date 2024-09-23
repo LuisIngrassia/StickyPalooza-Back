@@ -8,6 +8,8 @@ public interface CartService {
 
     Cart getCartById(Long id);
 
+    Cart getCartByIdForUser(Long id, Long userId);
+
     List<Cart> getAllCarts();
 
     void addProductToCart(Long cartId, Long productId, int quantity);
