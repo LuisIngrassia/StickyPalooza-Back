@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @Builder
 public class BillDTO {
-    private Long id;
+    private Long orderId;
     private Long userId;
     private Date billDate;
     private Map<Long, Integer> productQuantities;  

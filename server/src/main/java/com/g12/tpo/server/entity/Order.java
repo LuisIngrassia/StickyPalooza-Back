@@ -30,7 +30,7 @@ public class Order {
     @Column(name = "order_date", nullable = false)
     private Date orderDate;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<OrderProduct> orderProducts;
 
     @Column(name = "total_amount", nullable = false)

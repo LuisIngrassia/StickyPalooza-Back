@@ -1,7 +1,7 @@
 package com.g12.tpo.server.controllers.app;
 
 import java.util.List;
-import java.util.Set;
+//import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import com.g12.tpo.server.dto.BillDTO;
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.BillProduct;
-import com.g12.tpo.server.entity.Order;
+//import com.g12.tpo.server.entity.Order;
 import com.g12.tpo.server.entity.PaymentMethod;
-import com.g12.tpo.server.entity.Product;
+//import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.BillService;
-import com.g12.tpo.server.service.interfaces.OrderService;
-import com.g12.tpo.server.repository.ProductRepository;
+//mport com.g12.tpo.server.service.interfaces.OrderService;
+//import com.g12.tpo.server.repository.ProductRepository;
 
 @RestController
 @RequestMapping("/bills")
@@ -26,52 +26,52 @@ public class BillController {
     @Autowired
     private BillService billService;
 
-    @Autowired
-    private OrderService orderService;
+ //   @Autowired
+ //   private OrderService orderService;
 
-    @Autowired
-    private ProductRepository productRepository;
+ //   @Autowired
+ //   private ProductRepository productRepository;
 
-    // Convert BillDTO to Bill entity with associated products
-    private Bill convertToEntity(BillDTO dto) {
-        // Get the order using the order ID
-        Order order = orderService.getOrderById(dto.getId());
+    // // Convert BillDTO to Bill entity with associated products
+    // private Bill convertToEntity(BillDTO dto) {
+    //     // Get the order using the order ID
+    //     Order order = orderService.getOrderById(dto.getOrderId());
     
-        Bill bill = new Bill();
-        bill.setOrder(order);
-        bill.setBillDate(dto.getBillDate());
-        bill.setTotalAmount(dto.getTotalAmount());
+    //     Bill bill = new Bill();
+    //     bill.setOrder(order);
+    //     bill.setBillDate(dto.getBillDate());
+    //     bill.setTotalAmount(dto.getTotalAmount());
         
-        // Convert string payment method to PaymentMethod enum
-        bill.setPaymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()));  // Add this line
+    //     // Convert string payment method to PaymentMethod enum
+    //     bill.setPaymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()));  // Add this line
     
-        // Create BillProducts from the productQuantities in BillDTO
-        Set<BillProduct> billProducts = dto.getProductQuantities().entrySet().stream()
-                .map(entry -> {
-                    Long productId = entry.getKey();
-                    int quantity = entry.getValue();
+    //     // Create BillProducts from the productQuantities in BillDTO
+    //     Set<BillProduct> billProducts = dto.getProductQuantities().entrySet().stream()
+    //             .map(entry -> {
+    //                 Long productId = entry.getKey();
+    //                 int quantity = entry.getValue();
     
-                    Product product = productRepository.findById(productId)
-                            .orElseThrow(() -> new RuntimeException("Product not found"));
+    //                 Product product = productRepository.findById(productId)
+    //                         .orElseThrow(() -> new RuntimeException("Product not found"));
     
-                    BillProduct billProduct = new BillProduct();
-                    billProduct.setBill(bill);
-                    billProduct.setProduct(product);
-                    billProduct.setQuantity(quantity);
+    //                 BillProduct billProduct = new BillProduct();
+    //                 billProduct.setBill(bill);
+    //                 billProduct.setProduct(product);
+    //                 billProduct.setQuantity(quantity);
     
-                    return billProduct;
-                })
-                .collect(Collectors.toSet());
+    //                 return billProduct;
+    //             })
+    //             .collect(Collectors.toSet());
     
-        bill.setBillProducts(billProducts);
+    //     bill.setBillProducts(billProducts);
     
-        return bill;
-    }
+    //     return bill;
+    // }
     
     // Convert Bill entity to BillDTO
     private BillDTO convertToDTO(Bill bill) {
         return BillDTO.builder()
-                .id(bill.getId())
+                .orderId(bill.getId())
                 .userId(bill.getUser().getId())
                 .billDate(bill.getBillDate())
                 .totalAmount(bill.getTotalAmount())
@@ -116,18 +116,10 @@ public class BillController {
             return null;
         }
         
-        Bill bill = billService.convertOrderToBill(orderId, method); // This will now work correctly
+        Bill bill = billService.convertOrderToBill(orderId, method); 
         return ResponseEntity.ok(convertToDTO(bill));
     }
 
-    // PUT method to update a Bill
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<BillDTO> updateBill(@PathVariable Long id, @RequestBody BillDTO billDTO) {
-        Bill bill = convertToEntity(billDTO);
-        Bill updatedBill = billService.updateBill(id, bill);
-        return ResponseEntity.ok(convertToDTO(updatedBill));
-    }
 
     // DELETE method to remove a Bill by ID
     @DeleteMapping("/{id}")

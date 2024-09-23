@@ -15,6 +15,7 @@ import com.g12.tpo.server.entity.PaymentMethod;
 import com.g12.tpo.server.repository.BillRepository;
 import com.g12.tpo.server.service.interfaces.BillService;
 import com.g12.tpo.server.service.interfaces.OrderService;
+import com.g12.tpo.server.exceptions.BillNotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -58,26 +59,15 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill getBillById(Long id) {
         return billRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bill not found"));
+                .orElseThrow(() -> new BillNotFoundException(id));
     }
+    
 
     @Transactional
     @Override
     public List<Bill> getAllBills() {
         return billRepository.findAll();
     }
-
-    @Transactional
-    @Override
-    public Bill updateBill(Long id, Bill billDetails) {
-        Bill bill = getBillById(id);
-        bill.setBillProducts(billDetails.getBillProducts());
-        bill.setTotalAmount(billDetails.getTotalAmount());
-        bill.setUser(billDetails.getUser());
-        bill.setPaymentMethod(billDetails.getPaymentMethod());
-        return billRepository.save(bill);
-    }
-    
     
 
     @Override

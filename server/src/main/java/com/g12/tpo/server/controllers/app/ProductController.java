@@ -102,7 +102,6 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    // Endpoint for handling image uploads and updating the image URL
     @PostMapping("/{productId}/image")
     public ResponseEntity<ProductDTO> uploadProductImage(@PathVariable Long productId, @RequestParam("image") MultipartFile imageFile) {
         try {

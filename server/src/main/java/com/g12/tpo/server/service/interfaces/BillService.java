@@ -8,6 +8,5 @@ public interface BillService {
     Bill convertOrderToBill(Long orderId, PaymentMethod paymentMethod);
     Bill getBillById(Long id);
     List<Bill> getAllBills();
-    Bill updateBill(Long id, Bill billDetails);
     void deleteBill(Long id);
 }
