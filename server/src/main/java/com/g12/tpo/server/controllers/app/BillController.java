@@ -119,13 +119,4 @@ public class BillController {
         Bill bill = billService.convertOrderToBill(orderId, method); 
         return ResponseEntity.ok(convertToDTO(bill));
     }
-
-
-    // DELETE method to remove a Bill by ID
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
-        billService.deleteBill(id);
-        return ResponseEntity.noContent().build();
-    }
 }

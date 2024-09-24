@@ -38,7 +38,7 @@ public class OrderController {
     }
 
     @PostMapping("/fromCart/{cartId}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<OrderDTO> createOrderFromCart(@PathVariable Long cartId) {
         Order createdOrder = orderService.createOrderFromCart(cartId);
         return ResponseEntity.ok(convertToDTO(createdOrder));
