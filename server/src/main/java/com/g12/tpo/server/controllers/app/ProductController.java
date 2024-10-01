@@ -19,6 +19,7 @@ import com.g12.tpo.server.service.implementations.ImagenesProdService;
 
 @RestController
 @RequestMapping("/products")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProductController {
 
     @Autowired

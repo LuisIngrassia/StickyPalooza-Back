@@ -21,6 +21,7 @@ import com.g12.tpo.server.service.interfaces.BillService;
 
 @RestController
 @RequestMapping("/bills")
+@CrossOrigin(origins = "http://localhost:5173")
 public class BillController {
 
     @Autowired
