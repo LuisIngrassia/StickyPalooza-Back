@@ -90,11 +90,33 @@ public class ProductController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> updateProduct(
+            @PathVariable Long id,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("stockQuantity") Integer stockQuantity,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
+    
+        ProductDTO productDTO = ProductDTO.builder()
+                .id(id) 
+                .name(name)
+                .description(description)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .categoryId(categoryId)
+                .image(null) 
+                .build();
+    
         Product productDetails = convertToEntity(productDTO);
+    
+    
         Product updatedProduct = productService.updateProduct(id, productDetails);
+    
         return ResponseEntity.ok(convertToDTO(updatedProduct));
-    }    
+    }
+    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
