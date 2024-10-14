@@ -3,6 +3,7 @@ package com.g12.tpo.server.controllers.app;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class ProductController {
             .price(product.getPrice())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-            .image(product.getImage())
+            .image(product.getImage()) // Keep using "image" field
             .build();
     }
 
@@ -53,7 +54,7 @@ public class ProductController {
         product.setImage(productDTO.getImage());
 
         Category category = categoryService.getCategoryById(productDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Category not found"));
         product.setCategory(category);
 
         return product;
@@ -99,23 +100,34 @@ public class ProductController {
             @RequestParam("categoryId") Long categoryId,
             @RequestParam(value = "image", required = false) MultipartFile imageFile) {
     
+        Product existingProduct = productService.getProductById(id);
+    
+        String imageUrl = existingProduct != null && existingProduct.getImage() != null ? existingProduct.getImage() : null;
+    
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                imageUrl = fileUploadService.uploadImage(imageFile);
+            } catch (IOException e) {
+                return ResponseEntity.status(500).body(null); 
+            }
+        }
+    
         ProductDTO productDTO = ProductDTO.builder()
-                .id(id) 
+                .id(id)
                 .name(name)
                 .description(description)
                 .price(price)
                 .stockQuantity(stockQuantity)
                 .categoryId(categoryId)
-                .image(null) 
+                .image(imageUrl) 
                 .build();
     
         Product productDetails = convertToEntity(productDTO);
-    
-    
         Product updatedProduct = productService.updateProduct(id, productDetails);
     
         return ResponseEntity.ok(convertToDTO(updatedProduct));
     }
+    
     
 
     @DeleteMapping("/{id}")
@@ -128,7 +140,6 @@ public class ProductController {
     @PostMapping("/{productId}/image")
     public ResponseEntity<ProductDTO> uploadProductImage(@PathVariable Long productId, @RequestParam("image") MultipartFile imageFile) {
         try {
-            
             String image = fileUploadService.uploadImage(imageFile);
 
             Product updatedProduct = productService.updateProductImage(productId, image);
