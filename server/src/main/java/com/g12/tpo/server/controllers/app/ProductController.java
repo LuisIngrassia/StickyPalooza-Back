@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("permitAll()")    
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         List<ProductDTO> productDTOs = products.stream()
@@ -71,7 +71,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         if (product != null) {
@@ -126,9 +126,7 @@ public class ProductController {
         Product updatedProduct = productService.updateProduct(id, productDetails);
     
         return ResponseEntity.ok(convertToDTO(updatedProduct));
-    }
-    
-    
+    }    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -137,21 +135,8 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{productId}/image")
-    public ResponseEntity<ProductDTO> uploadProductImage(@PathVariable Long productId, @RequestParam("image") MultipartFile imageFile) {
-        try {
-            String image = fileUploadService.uploadImage(imageFile);
-
-            Product updatedProduct = productService.updateProductImage(productId, image);
-
-            return ResponseEntity.ok(convertToDTO(updatedProduct));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
     @GetMapping("/search")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<ProductDTO>> getProductsByName(@RequestParam String name) {
         List<Product> products = productService.getProductsByName(name);
         List<ProductDTO> productDTOs = products.stream()
@@ -161,7 +146,7 @@ public class ProductController {
     }
 
     @GetMapping("/byPrice")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(
         @RequestParam BigDecimal minPrice, 
         @RequestParam BigDecimal maxPrice) {
