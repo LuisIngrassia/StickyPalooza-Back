@@ -30,8 +30,7 @@ public class Product {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    // Store image URL here
-    @Column(name = "image", nullable = false)
+    @Column(name = "image")
     private String image;
 
     @ManyToOne

@@ -40,7 +40,7 @@ public class ProductController {
             .price(product.getPrice())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-            .image(product.getImage()) // Keep using "image" field
+            .image(product.getImage()) 
             .build();
     }
 
