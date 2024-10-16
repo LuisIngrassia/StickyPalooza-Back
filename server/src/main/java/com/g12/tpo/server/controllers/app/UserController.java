@@ -26,7 +26,6 @@ public class UserController {
         return UserDTO.builder()
             .id(user.getId())
             .email(user.getEmail())
-            .name(user.getName())
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
             .cartId(user.getCart() != null ? user.getCart().getId() : null)
@@ -40,7 +39,6 @@ public class UserController {
         User user = new User();
         user.setId(dto.getId());
         user.setEmail(dto.getEmail());
-        user.setName(dto.getName());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setRole(dto.getRole() != null ? Role.valueOf(dto.getRole()) : null);

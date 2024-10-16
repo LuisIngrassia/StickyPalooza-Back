@@ -31,11 +31,7 @@ public class AuthController {
 
             cartService.createCart(authResponse.getUserId());
 
-            AuthResponse responseWithoutUserId = AuthResponse.builder()
-            .accessToken(authResponse.getAccessToken())
-            .build();
-
-            return ResponseEntity.ok(responseWithoutUserId);
+            return ResponseEntity.ok(authResponse);
         }
     
         @PostMapping("/register/admin")
