@@ -81,13 +81,41 @@ public class ProductController {
         }
     }
 
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"}) 
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> createProduct(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("stockQuantity") Integer stockQuantity,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
+        
+        String imageUrl = null;
+        
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                imageUrl = fileUploadService.uploadImage(imageFile);
+            } catch (IOException e) {
+                return ResponseEntity.status(500).body(null);
+            }
+        }
+    
+        ProductDTO productDTO = ProductDTO.builder()
+                .name(name)
+                .description(description)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .categoryId(categoryId)
+                .image(imageUrl) 
+                .build();
+    
         Product product = convertToEntity(productDTO);
         Product createdProduct = productService.createProduct(product);
+        
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
+    
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -108,7 +136,7 @@ public class ProductController {
             try {
                 imageUrl = fileUploadService.uploadImage(imageFile);
             } catch (IOException e) {
-                return ResponseEntity.status(500).body(null); 
+                return ResponseEntity.status(500).body(null);
             }
         }
     
@@ -119,7 +147,7 @@ public class ProductController {
                 .price(price)
                 .stockQuantity(stockQuantity)
                 .categoryId(categoryId)
-                .image(imageUrl) 
+                .image(imageUrl)
                 .build();
     
         Product productDetails = convertToEntity(productDTO);
