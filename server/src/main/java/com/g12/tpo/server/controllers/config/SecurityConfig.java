@@ -45,7 +45,9 @@ public class SecurityConfig {
                 .requestMatchers("/carts/**").authenticated()
                 .requestMatchers("/products/**").authenticated()
                 .requestMatchers("/bills/**").authenticated()
-                .requestMatchers("/orders/**").authenticated())
+                .requestMatchers("/orders/**").authenticated()
+                .requestMatchers("/users/**").authenticated())
+
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider) // Keep custom provider
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
