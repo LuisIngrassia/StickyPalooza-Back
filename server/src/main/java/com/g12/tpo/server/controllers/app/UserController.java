@@ -3,16 +3,17 @@ package com.g12.tpo.server.controllers.app;
 import com.g12.tpo.server.entity.Role;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.dto.UserDTO;
+import com.g12.tpo.server.dto.ShowUserDTO;
 import com.g12.tpo.server.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -22,6 +23,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // Convert User to UserDTO without accessing lazy-loaded collections
     private UserDTO convertToDTO(User user) {
         return UserDTO.builder()
             .id(user.getId())
@@ -29,20 +31,18 @@ public class UserController {
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
             .cartId(user.getCart() != null ? user.getCart().getId() : null)
-            .orderIds(user.getOrders().stream().map(order -> order.getId()).collect(Collectors.toList()))
-            .billIds(user.getBills().stream().map(bill -> bill.getId()).collect(Collectors.toList()))
+            // Avoid accessing lazy-loaded collections here
             .role(user.getRole().name())
             .build();
     }
 
-    private User convertToEntity(UserDTO dto) {
-        User user = new User();
-        user.setId(dto.getId());
-        user.setEmail(dto.getEmail());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setRole(dto.getRole() != null ? Role.valueOf(dto.getRole()) : null);
-        return user;
+    private ShowUserDTO convertToShowUserDTO(User user) {
+        return ShowUserDTO.builder()
+            .email(user.getEmail())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .password(user.getPassword())  
+            .build();
     }
 
     @GetMapping
@@ -79,5 +79,30 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<ShowUserDTO> getLoggedInUser(Authentication authentication) {
+        String loggedInEmail = authentication.getName();  
+        Optional<User> result = userService.getUserByEmail(loggedInEmail);
+
+        if (result.isPresent()) {
+            User user = result.get();
+            ShowUserDTO userDTO = convertToShowUserDTO(user); 
+            return ResponseEntity.ok(userDTO);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    private User convertToEntity(UserDTO dto) {
+        User user = new User();
+        user.setId(dto.getId());
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setRole(dto.getRole() != null ? Role.valueOf(dto.getRole()) : null);
+        return user;
     }
 }

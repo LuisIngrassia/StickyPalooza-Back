@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getUserByEmail(String email) { // Implementation of the new method
+        return userRepository.findByEmail(email); // Assuming your UserRepository has this method
+    }
+
+    @Override
     public void deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);

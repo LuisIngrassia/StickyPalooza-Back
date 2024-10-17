@@ -8,8 +8,10 @@ import java.util.Optional;
 
 public interface UserService {
     Page<User> getAllUsers(PageRequest pageRequest);
-
+    
     Optional<User> getUserById(Long id);
+    
+    Optional<User> getUserByEmail(String email); // New method
 
     void deleteUser(Long id);
 
