@@ -1,9 +1,9 @@
 package com.g12.tpo.server.dto;
 
-import java.math.BigDecimal;
-
 import lombok.Builder;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -12,7 +12,7 @@ public class ProductDTO {
     private String name;
     private String description;
     private BigDecimal price;
-    private Long categoryId;
+    private String image; 
     private int stockQuantity;
-    private String image;
+    private Long categoryId; 
 }

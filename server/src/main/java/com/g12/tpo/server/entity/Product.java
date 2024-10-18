@@ -30,7 +30,7 @@ public class Product {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "image")
+    @Column(name = "image") 
     private String image;
 
     @ManyToOne

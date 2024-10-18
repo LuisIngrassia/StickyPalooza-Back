@@ -3,7 +3,6 @@ package com.g12.tpo.server.controllers.app;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.CategoryService;
 import com.g12.tpo.server.service.interfaces.ProductService;
-import com.g12.tpo.server.service.implementations.ImagenesProdService;
 
 @RestController
 @RequestMapping("/products")
@@ -29,9 +27,6 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    @Autowired
-    private ImagenesProdService fileUploadService;
-
     private ProductDTO convertToDTO(Product product) {
         return ProductDTO.builder()
             .id(product.getId())
@@ -40,28 +35,12 @@ public class ProductController {
             .price(product.getPrice())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-            .image(product.getImage()) 
+            .image(product.getImage())
             .build();
     }
 
-    private Product convertToEntity(ProductDTO productDTO) {
-        Product product = new Product();
-        product.setId(productDTO.getId());
-        product.setName(productDTO.getName());
-        product.setDescription(productDTO.getDescription());
-        product.setPrice(productDTO.getPrice());
-        product.setStockQuantity(productDTO.getStockQuantity());
-        product.setImage(productDTO.getImage());
-
-        Category category = categoryService.getCategoryById(productDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        product.setCategory(category);
-
-        return product;
-    }
-
     @GetMapping
-    @PreAuthorize("permitAll()")    
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         List<ProductDTO> productDTOs = products.stream()
@@ -81,7 +60,7 @@ public class ProductController {
         }
     }
 
-    @PostMapping(consumes = {"multipart/form-data"}) 
+    @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> createProduct(
             @RequestParam("name") String name,
@@ -91,31 +70,20 @@ public class ProductController {
             @RequestParam("categoryId") Long categoryId,
             @RequestParam(value = "image", required = false) MultipartFile imageFile) {
         
-        String imageUrl = null;
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setStockQuantity(stockQuantity);
         
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                imageUrl = fileUploadService.uploadImage(imageFile);
-            } catch (IOException e) {
-                return ResponseEntity.status(500).body(null);
-            }
-        }
-    
-        ProductDTO productDTO = ProductDTO.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .stockQuantity(stockQuantity)
-                .categoryId(categoryId)
-                .image(imageUrl) 
-                .build();
-    
-        Product product = convertToEntity(productDTO);
-        Product createdProduct = productService.createProduct(product);
+        Category category = categoryService.getCategoryById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        product.setCategory(category);
+        
+        Product createdProduct = productService.createProduct(product, imageFile); // Pass image file
         
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
-    
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -128,30 +96,17 @@ public class ProductController {
             @RequestParam("categoryId") Long categoryId,
             @RequestParam(value = "image", required = false) MultipartFile imageFile) {
     
-        Product existingProduct = productService.getProductById(id);
-    
-        String imageUrl = existingProduct != null && existingProduct.getImage() != null ? existingProduct.getImage() : null;
-    
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                imageUrl = fileUploadService.uploadImage(imageFile);
-            } catch (IOException e) {
-                return ResponseEntity.status(500).body(null);
-            }
-        }
-    
-        ProductDTO productDTO = ProductDTO.builder()
-                .id(id)
-                .name(name)
-                .description(description)
-                .price(price)
-                .stockQuantity(stockQuantity)
-                .categoryId(categoryId)
-                .image(imageUrl)
-                .build();
-    
-        Product productDetails = convertToEntity(productDTO);
-        Product updatedProduct = productService.updateProduct(id, productDetails);
+        Product productDetails = new Product();
+        productDetails.setName(name);
+        productDetails.setDescription(description);
+        productDetails.setPrice(price);
+        productDetails.setStockQuantity(stockQuantity);
+        
+        Category category = categoryService.getCategoryById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        productDetails.setCategory(category);
+        
+        Product updatedProduct = productService.updateProduct(id, productDetails, imageFile); // Pass image file
     
         return ResponseEntity.ok(convertToDTO(updatedProduct));
     }    
@@ -175,13 +130,11 @@ public class ProductController {
 
     @GetMapping("/byPrice")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(
-        @RequestParam BigDecimal minPrice, 
-        @RequestParam BigDecimal maxPrice) {
-            List<Product> products = productService.getProductsByPriceRange(minPrice, maxPrice);
-            List<ProductDTO> productDTOs = products.stream()
-                                           .map(this::convertToDTO)
-                                           .collect(Collectors.toList());
-            return ResponseEntity.ok(productDTOs);
+    public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(@RequestParam BigDecimal minPrice, @RequestParam BigDecimal maxPrice) {
+        List<Product> products = productService.getProductsByPriceRange(minPrice, maxPrice);
+        List<ProductDTO> productDTOs = products.stream()
+                                               .map(this::convertToDTO)
+                                               .collect(Collectors.toList());
+        return ResponseEntity.ok(productDTOs);
     }
 }

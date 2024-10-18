@@ -1,4 +1,4 @@
-package com.g12.tpo.server.service.implementations;
+package com.g12.tpo.server.service.interfaces;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,8 +21,9 @@ public class ImagenesProdService {
 
         String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
+
         Files.write(filePath, imageFile.getBytes());
 
-        return "/uploads/" + fileName; 
+        return "/uploads/" + fileName;
     }
 }
