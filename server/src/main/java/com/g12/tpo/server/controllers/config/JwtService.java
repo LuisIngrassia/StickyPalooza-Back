@@ -26,18 +26,17 @@ public class JwtService {
         return buildToken(userDetails, jwtExpiration);
     }
 
-    private String buildToken(
-            UserDetails userDetails,
-            long expiration) {
+    private String buildToken(UserDetails userDetails, long expiration) {
         return Jwts
                 .builder()
                 .subject(userDetails.getUsername())
+                .claim("role", userDetails.getAuthorities().stream().findFirst().orElse(null).getAuthority()) // Add role claim
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .claim("Juancho", 011011011)
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSecretKey())
                 .compact();
     }
+    
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractClaim(token, Claims::getSubject);
@@ -56,6 +55,11 @@ public class JwtService {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+    
 
     private Claims extractAllClaims(String token) {
         return Jwts

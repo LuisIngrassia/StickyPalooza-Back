@@ -23,18 +23,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Convert User to UserDTO without accessing lazy-loaded collections
     private UserDTO convertToDTO(User user) {
         return UserDTO.builder()
             .id(user.getId())
             .email(user.getEmail())
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
-            .cartId(user.getCart() != null ? user.getCart().getId() : null)
-            // Avoid accessing lazy-loaded collections here
+            .cartId(user.getRole() == Role.ADMIN ? null : (user.getCart() != null ? user.getCart().getId() : null))
             .role(user.getRole().name())
             .build();
     }
+    
 
     private ShowUserDTO convertToShowUserDTO(User user) {
         return ShowUserDTO.builder()

@@ -10,6 +10,8 @@ import com.g12.tpo.server.controllers.config.JwtService;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.UserRepository;
 import com.g12.tpo.server.service.interfaces.AuthService;
+import com.g12.tpo.server.exceptions.InvalidCredentialsException; 
+import com.g12.tpo.server.exceptions.UserNotFoundException;      
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,25 +40,25 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .userId(savedUser.getId())
+                .role(savedUser.getRole().name()) // Ensure this line is present
                 .build();
     }
-    
 
     @Override
     public AuthResponse authenticate(AuthRequest request) {
         User user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
-    
+
         String token = jwtService.generateToken(user);
 
         return AuthResponse.builder()
                 .accessToken(token)
                 .userId(user.getId())
+                .role(user.getRole().name()) // Setting the user's role
                 .build();
     }
-    
 }

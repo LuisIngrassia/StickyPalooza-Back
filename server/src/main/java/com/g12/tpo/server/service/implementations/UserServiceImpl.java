@@ -1,5 +1,6 @@
 package com.g12.tpo.server.service.implementations;
 
+import com.g12.tpo.server.entity.Role;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.UserRepository;
 import com.g12.tpo.server.service.interfaces.UserService;
@@ -30,8 +31,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) { // Implementation of the new method
-        return userRepository.findByEmail(email); // Assuming your UserRepository has this method
+    public Optional<User> getUserByEmail(String email) { 
+        return userRepository.findByEmail(email); 
     }
 
     @Override
@@ -44,27 +45,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, User updatedUser) {
-        return userRepository.findById(id).map(user -> {
+public User updateUser(Long id, User updatedUser) {
+    return userRepository.findById(id).map(user -> {
+        if (updatedUser.getEmail() != null) {
+            user.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getFirstName() != null) {
+            user.setFirstName(updatedUser.getFirstName());
+        }
+        if (updatedUser.getLastName() != null) {
+            user.setLastName(updatedUser.getLastName());
+        }
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            String hashedPassword = passwordEncoder.encode(updatedUser.getPassword());
+            user.setPassword(hashedPassword);  
+        }
+        if (updatedUser.getRole() != null) {
+            user.setRole(updatedUser.getRole());
+        }
 
-            if (updatedUser.getEmail() != null) {
-                user.setEmail(updatedUser.getEmail());
-            }
-            if (updatedUser.getFirstName() != null) {
-                user.setFirstName(updatedUser.getFirstName());
-            }
-            if (updatedUser.getLastName() != null) {
-                user.setLastName(updatedUser.getLastName());
-            }
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                String hashedPassword = passwordEncoder.encode(updatedUser.getPassword());
-                user.setPassword(hashedPassword);  
-            }
-            if (updatedUser.getRole() != null) {
-                user.setRole(updatedUser.getRole());
-            }
-            return userRepository.save(user);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
-    }
+        if (user.getRole() == Role.ADMIN) {
+            user.setCart(null);
+        }
+
+        return userRepository.save(user);
+    }).orElseThrow(() -> new RuntimeException("User not found"));
+}
+
     
 }
