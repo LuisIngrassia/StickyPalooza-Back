@@ -70,9 +70,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long userId, @RequestBody UserDTO userRequest) {
         User user = convertToEntity(userRequest);
+        
         User updatedUser = userService.updateUser(userId, user);
+        
         return ResponseEntity.ok(convertToDTO(updatedUser));
     }
+    
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
