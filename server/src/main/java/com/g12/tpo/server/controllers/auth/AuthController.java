@@ -22,10 +22,9 @@ public class AuthController {
         private final AuthService service;
         private final CartService cartService;
 
-        @PostMapping("/register/user")
+        @PostMapping("/register")
         public ResponseEntity<AuthResponse> registerUser(
                 @RequestBody RegisterRequest request) {
-            request.setRole(Role.USER);
 
             AuthResponse authResponse = service.register(request);
 
@@ -34,12 +33,6 @@ public class AuthController {
             return ResponseEntity.ok(authResponse);
         }
     
-        @PostMapping("/register/admin")
-        public ResponseEntity<AuthResponse> registerAdmin(
-                @RequestBody RegisterRequest request) {
-            request.setRole(Role.ADMIN);
-            return ResponseEntity.ok(service.register(request));
-        }
 
         @PostMapping("/authenticate")
         public ResponseEntity<AuthResponse> authenticate(
