@@ -3,12 +3,12 @@ package com.g12.tpo.server.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Map;
+import java.util.List;
 
 @Data
 @Builder
 public class CartDTO {
     private Long id;
     private Long userId;
-    private Map<Long, Integer> productQuantities;
+    private List<CartProductDTO> cartProducts;
 }

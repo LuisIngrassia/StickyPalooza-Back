@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
 
-
 @Data
 @Builder
 public class CartProductDTO {
@@ -14,5 +13,6 @@ public class CartProductDTO {
     private Long productId;
     private int quantity;
     private BigDecimal productPrice;
-
+    private String productName;
+    private String productImage;  
 }
