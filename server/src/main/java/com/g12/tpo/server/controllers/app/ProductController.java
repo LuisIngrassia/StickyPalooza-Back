@@ -15,6 +15,9 @@ import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.CategoryService;
 import com.g12.tpo.server.service.interfaces.ProductService;
+import com.g12.tpo.server.service.interfaces.FileUploadService;
+
+import java.io.IOException; // Import IOException
 
 @RestController
 @RequestMapping("/products")
@@ -26,6 +29,9 @@ public class ProductController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private FileUploadService fileUploadService;
 
     private ProductDTO convertToDTO(Product product) {
         return ProductDTO.builder()
@@ -53,11 +59,7 @@ public class ProductController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
-        if (product != null) {
-            return ResponseEntity.ok(convertToDTO(product));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(convertToDTO(product));
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
@@ -80,36 +82,56 @@ public class ProductController {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         product.setCategory(category);
         
-        Product createdProduct = productService.createProduct(product, imageFile); // Pass image file
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imagePath = fileUploadService.uploadImage(imageFile);
+                product.setImage(imagePath);
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null); 
+        }
+        
+        Product createdProduct = productService.createProduct(product, imageFile); 
         
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long id,
-            @RequestParam("name") String name,
-            @RequestParam("description") String description,
-            @RequestParam("price") BigDecimal price,
-            @RequestParam("stockQuantity") Integer stockQuantity,
-            @RequestParam("categoryId") Long categoryId,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "price", required = false) BigDecimal price,
+            @RequestParam(value = "stockQuantity", required = false) Integer stockQuantity,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "image", required = false) MultipartFile imageFile) {
-    
-        Product productDetails = new Product();
-        productDetails.setName(name);
-        productDetails.setDescription(description);
-        productDetails.setPrice(price);
-        productDetails.setStockQuantity(stockQuantity);
         
-        Category category = categoryService.getCategoryById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        productDetails.setCategory(category);
+        Product productDetails = productService.getProductById(id); 
+        if (name != null) productDetails.setName(name);
+        if (description != null) productDetails.setDescription(description);
+        if (price != null) productDetails.setPrice(price);
+        if (stockQuantity != null) productDetails.setStockQuantity(stockQuantity);
         
-        Product updatedProduct = productService.updateProduct(id, productDetails, imageFile); // Pass image file
-    
+        if (categoryId != null) {
+            Category category = categoryService.getCategoryById(categoryId)
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            productDetails.setCategory(category);
+        }
+
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imagePath = fileUploadService.uploadImage(imageFile);
+                productDetails.setImage(imagePath);
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null); 
+        }
+
+        Product updatedProduct = productService.updateProduct(id, productDetails, imageFile); 
+        
         return ResponseEntity.ok(convertToDTO(updatedProduct));
-    }    
+    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")

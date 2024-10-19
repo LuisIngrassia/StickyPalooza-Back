@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.exceptions.ProductNotFoundException;
 import com.g12.tpo.server.repository.ProductRepository;
-import com.g12.tpo.server.service.interfaces.ImagenesProdService;
+import com.g12.tpo.server.service.interfaces.FileUploadService;
 import com.g12.tpo.server.service.interfaces.ProductService;
 
 @Service
@@ -23,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Autowired
-    private ImagenesProdService fileUploadService;
+    private FileUploadService fileUploadService;
 
     @Override
     public Product createProduct(Product product, MultipartFile imageFile) {
