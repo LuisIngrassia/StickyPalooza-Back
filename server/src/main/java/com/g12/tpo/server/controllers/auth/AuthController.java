@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.g12.tpo.server.entity.Role;
 import com.g12.tpo.server.service.interfaces.AuthService;
 import com.g12.tpo.server.service.interfaces.CartService;
 
