@@ -14,10 +14,10 @@ import com.g12.tpo.server.dto.ProductDTO;
 import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.CategoryService;
-import com.g12.tpo.server.service.interfaces.ProductService;
 import com.g12.tpo.server.service.interfaces.FileUploadService;
+import com.g12.tpo.server.service.interfaces.ProductService;
 
-import java.io.IOException; // Import IOException
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/products")
@@ -70,32 +70,29 @@ public class ProductController {
             @RequestParam("price") BigDecimal price,
             @RequestParam("stockQuantity") Integer stockQuantity,
             @RequestParam("categoryId") Long categoryId,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
-        
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException { // Add throws IOException
+    
         Product product = new Product();
         product.setName(name);
         product.setDescription(description);
         product.setPrice(price);
         product.setStockQuantity(stockQuantity);
-        
+    
         Category category = categoryService.getCategoryById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         product.setCategory(category);
-        
-        try {
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String imagePath = fileUploadService.uploadImage(imageFile);
-                product.setImage(imagePath);
-            }
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body(null); 
+    
+        if (image != null && !image.isEmpty()) {
+            String imagePath = fileUploadService.uploadImage(image); 
+            product.setImage(imagePath);
         }
-        
-        Product createdProduct = productService.createProduct(product, imageFile); 
-        
+    
+        Product createdProduct = productService.createProduct(product, product.getImage());
+    
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
-
+    
+    
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> updateProduct(
@@ -105,9 +102,10 @@ public class ProductController {
             @RequestParam(value = "price", required = false) BigDecimal price,
             @RequestParam(value = "stockQuantity", required = false) Integer stockQuantity,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         
-        Product productDetails = productService.getProductById(id); 
+        Product productDetails = productService.getProductById(id);
+    
         if (name != null) productDetails.setName(name);
         if (description != null) productDetails.setDescription(description);
         if (price != null) productDetails.setPrice(price);
@@ -118,20 +116,22 @@ public class ProductController {
                     .orElseThrow(() -> new RuntimeException("Category not found"));
             productDetails.setCategory(category);
         }
-
-        try {
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String imagePath = fileUploadService.uploadImage(imageFile);
+    
+        if (image != null && !image.isEmpty()) {
+            try {
+                String imagePath = fileUploadService.uploadImage(image); 
                 productDetails.setImage(imagePath);
+            } catch (IOException e) {
+                return ResponseEntity.status(500).body(null); 
             }
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body(null); 
         }
-
-        Product updatedProduct = productService.updateProduct(id, productDetails, imageFile); 
-        
+    
+        Product updatedProduct = productService.updateProduct(id, productDetails, productDetails.getImage());
+    
         return ResponseEntity.ok(convertToDTO(updatedProduct));
     }
+    
+    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")

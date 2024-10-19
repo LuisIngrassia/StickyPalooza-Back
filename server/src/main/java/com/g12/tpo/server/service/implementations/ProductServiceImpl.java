@@ -1,6 +1,5 @@
 package com.g12.tpo.server.service.implementations;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -8,12 +7,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.exceptions.ProductNotFoundException;
 import com.g12.tpo.server.repository.ProductRepository;
-import com.g12.tpo.server.service.interfaces.FileUploadService;
 import com.g12.tpo.server.service.interfaces.ProductService;
 
 @Service
@@ -22,18 +19,10 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private FileUploadService fileUploadService;
-
     @Override
-    public Product createProduct(Product product, MultipartFile imageFile) {
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                String imagePath = fileUploadService.uploadImage(imageFile);
-                product.setImage(imagePath);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload image: " + e.getMessage());
-            }
+    public Product createProduct(Product product, String imagePath) { // Accept image path as String
+        if (imagePath != null && !imagePath.isEmpty()) {
+            product.setImage(imagePath); // Set the image path directly
         }
         return productRepository.save(product);
     }
@@ -51,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product updateProduct(Long id, Product productDetails, MultipartFile imageFile) {
+    public Product updateProduct(Long id, Product productDetails, String imagePath) { // Accept image path as String
         Product product = getProductById(id);
 
         Optional.ofNullable(productDetails.getName()).ifPresent(product::setName);
@@ -60,13 +49,8 @@ public class ProductServiceImpl implements ProductService {
         Optional.ofNullable(productDetails.getCategory()).ifPresent(product::setCategory);
         Optional.ofNullable(productDetails.getStockQuantity()).ifPresent(product::setStockQuantity);
 
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                String imagePath = fileUploadService.uploadImage(imageFile);
-                product.setImage(imagePath);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload image: " + e.getMessage());
-            }
+        if (imagePath != null && !imagePath.isEmpty()) {
+            product.setImage(imagePath); 
         }
 
         return productRepository.save(product);

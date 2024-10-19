@@ -3,19 +3,17 @@ package com.g12.tpo.server.service.interfaces;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.exceptions.ProductNotFoundException;
 
 public interface ProductService {
-    Product createProduct(Product product, MultipartFile imageFile);
+    Product createProduct(Product product, String imagePath); 
 
     Product getProductById(Long id) throws ProductNotFoundException;
 
     List<Product> getAllProducts();
 
-    Product updateProduct(Long id, Product productDetails, MultipartFile imageFile) throws ProductNotFoundException;
+    Product updateProduct(Long id, Product productDetails, String imagePath) throws ProductNotFoundException; // Accept image path as String
 
     void deleteProduct(Long id) throws ProductNotFoundException;
 

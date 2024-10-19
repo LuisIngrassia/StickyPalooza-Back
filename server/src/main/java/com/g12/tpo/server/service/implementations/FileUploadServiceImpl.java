@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.g12.tpo.server.service.interfaces.FileUploadService;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
 
-    private final String UPLOAD_DIR = "src/main/resources/static/uploads/";
+    private final String UPLOAD_DIR = "../client/public/images"; 
 
     @Override
     public String uploadImage(MultipartFile file) throws IOException {
@@ -23,12 +24,15 @@ public class FileUploadServiceImpl implements FileUploadService {
 
         String originalFilename = file.getOriginalFilename();
         String newFileName = UUID.randomUUID() + "_" + originalFilename;
-        Path path = Paths.get(UPLOAD_DIR + newFileName);
 
-        Files.createDirectories(path.getParent());
+        File directory = new File(UPLOAD_DIR);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
-        Files.write(path, file.getBytes());
+        Path filePath = Paths.get(UPLOAD_DIR, newFileName);
+        Files.copy(file.getInputStream(), filePath);
 
-        return "/uploads/" + newFileName; 
+        return newFileName; 
     }
 }
