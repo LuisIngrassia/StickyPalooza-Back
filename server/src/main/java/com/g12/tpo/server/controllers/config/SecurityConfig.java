@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/error/**").permitAll()
                 .requestMatchers("/categories/**").authenticated()
                 .requestMatchers("/carts/**").authenticated()
-                .requestMatchers("/products/**").authenticated()
+                .requestMatchers("/products/**").permitAll()
                 .requestMatchers("/bills/**").authenticated()
                 .requestMatchers("/orders/**").authenticated()
                 .requestMatchers("/users/**").authenticated())
