@@ -69,9 +69,7 @@ public class CartServiceImpl implements CartService {
         product.setStockQuantity(product.getStockQuantity() - quantity);
         productRepository.save(product);
     }
-
     
-
     @Override
     public void deleteCart(Long id) {
         Cart cart = getCartById(id);
@@ -97,7 +95,6 @@ public class CartServiceImpl implements CartService {
 
         return cart;
     }
-    
 
     @Override
     public List<Cart> getAllCarts() {

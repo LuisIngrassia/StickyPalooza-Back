@@ -7,14 +7,15 @@ import com.g12.tpo.server.controllers.auth.AuthRequest;
 import com.g12.tpo.server.controllers.auth.AuthResponse;
 import com.g12.tpo.server.controllers.auth.RegisterRequest;
 import com.g12.tpo.server.controllers.config.JwtService;
+import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.UserRepository;
 import com.g12.tpo.server.service.interfaces.AuthService;
+import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.exceptions.InvalidCredentialsException; 
 import com.g12.tpo.server.exceptions.UserNotFoundException;      
 
 import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final CartService cartService;  // Inject CartService
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -35,12 +37,16 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = repository.save(user);
 
+        // Create a new cart for the user
+        Cart cart = cartService.createCart(savedUser.getId());
+
         var jwtToken = jwtService.generateToken(savedUser);
 
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .userId(savedUser.getId())
-                .role(savedUser.getRole().name()) // Ensure this line is present
+                .role(savedUser.getRole().name())
+                .cartId(cart.getId()) 
                 .build();
     }
 
@@ -53,12 +59,16 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialsException("Invalid credentials");
         }
 
+        // Fetch user's cart
+        Cart cart = cartService.getCartByIdForUser(user.getCart().getId(), user.getId());
+
         String token = jwtService.generateToken(user);
 
         return AuthResponse.builder()
                 .accessToken(token)
                 .userId(user.getId())
-                .role(user.getRole().name()) // Setting the user's role
+                .role(user.getRole().name())
+                .cartId(cart.getId())
                 .build();
     }
 }
