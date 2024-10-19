@@ -96,7 +96,7 @@ public class ProductController {
         return ResponseEntity.status(201).body(convertToDTO(createdProduct));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long id,
