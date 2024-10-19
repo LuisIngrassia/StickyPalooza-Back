@@ -24,7 +24,6 @@ public class AuthController {
 
         AuthResponse authResponse = service.register(request);
 
-        // The cartId is now included in authResponse
         return ResponseEntity.ok(authResponse);
     }
 
@@ -32,7 +31,6 @@ public class AuthController {
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody AuthRequest request) {
 
-        // The cartId is now included in the AuthResponse
         return ResponseEntity.ok(service.authenticate(request));
     }
 }

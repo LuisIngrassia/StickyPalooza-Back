@@ -11,6 +11,7 @@ import com.g12.tpo.server.entity.User;
 import com.g12.tpo.server.repository.CartProductRepository;
 import com.g12.tpo.server.repository.CartRepository;
 import com.g12.tpo.server.repository.ProductRepository;
+import com.g12.tpo.server.repository.UserRepository;
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.service.interfaces.UserService;
 
@@ -27,6 +28,9 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -84,18 +88,30 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart getCartByIdForUser(Long cartId, Long userId) {
-        Cart cart = cartRepository.findByCartId(cartId);
-
-        if (cart.getUser().getId() != userId){
-            return null;    
+    public Cart getCartByUserId(Long userId) {
+        // Fetch the user by ID from the repository
+        User user = userRepository.findById(userId).orElse(null);
+        
+        // If user doesn't exist, return null
+        if (user == null) {
+            return null;
         }
-
-        Hibernate.initialize(cart.getCartProducts()); 
-
+    
+        // Get the cart from the user
+        Cart cart = user.getCart();
+    
+        // Check if the cart belongs to the user
+        if (cart == null || !cart.getUser().getId().equals(userId)) {
+            return null;
+        }
+    
+        // Ensure that the cart products are initialized (important for lazy loading)
+        Hibernate.initialize(cart.getCartProducts());
+    
+        // Return the cart
         return cart;
     }
-
+    
     @Override
     public List<Cart> getAllCarts() {
         return cartRepository.findAllWithCartProducts();

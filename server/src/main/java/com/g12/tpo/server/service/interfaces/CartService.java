@@ -8,7 +8,7 @@ public interface CartService {
 
     Cart getCartById(Long id);
 
-    Cart getCartByIdForUser(Long id, Long userId);
+    Cart getCartByUserId(Long userId);
 
     List<Cart> getAllCarts();
 

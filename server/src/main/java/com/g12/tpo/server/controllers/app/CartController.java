@@ -6,6 +6,8 @@ import com.g12.tpo.server.dto.CartDTO;
 import com.g12.tpo.server.service.interfaces.CartService;
 import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.entity.CartProduct;
+import com.g12.tpo.server.entity.User;
+import com.g12.tpo.server.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +17,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/carts")
 @CrossOrigin(origins = "http://localhost:5173")
 public class CartController {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private CartService cartService;
@@ -46,17 +51,20 @@ public class CartController {
         return ResponseEntity.ok(convertToDTO(createdCart));
     }
     
-    @GetMapping("/{id}/{userId}")
+    @GetMapping("/{userId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CartDTO> getCartById(@PathVariable Long id, @PathVariable Long userId) {
-    Cart cart = cartService.getCartByIdForUser(id, userId);
+    public ResponseEntity<CartDTO> getCartByUserId(@PathVariable Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 
-    if (cart == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(null);
-    }
-    
-    return ResponseEntity.ok(convertToDTO(cart));
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok(convertToDTO(cart));
     }
 
     @GetMapping
@@ -69,7 +77,6 @@ public class CartController {
         return ResponseEntity.ok(cartDTOs);
     }
 
-    
     @PostMapping("/addProduct")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> addProductToCart(@RequestBody AddProductToCartRequest request) {
@@ -80,7 +87,6 @@ public class CartController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
@@ -88,5 +94,4 @@ public class CartController {
         cartService.deleteCart(id);
         return ResponseEntity.noContent().build();
     }
-
 }
