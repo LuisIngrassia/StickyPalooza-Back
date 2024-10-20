@@ -102,4 +102,12 @@ public class BillServiceImpl implements BillService {
             return false;
         }
     }
+
+    @Override
+    public Bill markBillAsPaid(Long id) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bill not found for id: " + id));
+        bill.setPaid(true);
+        return billRepository.save(bill);
+    }
 }

@@ -88,4 +88,12 @@ public class BillController {
         Bill bill = billService.convertOrderToBill(orderId, method); 
         return ResponseEntity.ok(convertToDTO(bill));
     }
+
+    @PostMapping("/markAsPaid/{id}")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<BillDTO> markBillAsPaid(@PathVariable Long id) {
+        Bill bill = billService.markBillAsPaid(id);
+        return ResponseEntity.ok(convertToDTO(bill));
+    }
+
 }

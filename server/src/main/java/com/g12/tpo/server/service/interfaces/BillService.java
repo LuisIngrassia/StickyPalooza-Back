@@ -10,4 +10,5 @@ public interface BillService {
     List<Bill> getAllBills();
     List<Bill> getBillsByUserId(Long userId);
     boolean isValidPaymentMethod(String paymentMethod); 
+    public Bill markBillAsPaid(Long orderId);
 }
