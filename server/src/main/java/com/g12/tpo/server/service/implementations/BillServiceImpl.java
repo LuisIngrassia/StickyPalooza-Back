@@ -3,10 +3,13 @@ package com.g12.tpo.server.service.implementations;
 import java.util.List;
 import java.util.Date;
 import java.util.Set;
-import java.util.stream.Collectors; 
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.BillProduct;
@@ -22,6 +25,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class BillServiceImpl implements BillService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BillServiceImpl.class);
+
     @Autowired
     private BillRepository billRepository;
 
@@ -31,28 +36,44 @@ public class BillServiceImpl implements BillService {
     @Transactional
     @Override
     public Bill convertOrderToBill(Long orderId, PaymentMethod paymentMethod) {
-        Order order = orderService.getOrderById(orderId);
-    
-        Bill bill = new Bill();
-        bill.setOrder(order);
-        bill.setBillDate(new Date());
-        bill.setTotalAmount(order.getTotalAmount());
-        bill.setUser(order.getUser());
-        bill.setPaymentMethod(paymentMethod);
-        bill.setPaid(false);  // Set initial state as unpaid
-    
-        Set<BillProduct> billProducts = order.getOrderProducts().stream()
-                .map(orderProduct -> {
-                    BillProduct billProduct = new BillProduct();
-                    billProduct.setBill(bill);
-                    billProduct.setProduct(orderProduct.getProduct());
-                    billProduct.setQuantity(orderProduct.getQuantity());
-                    return billProduct;
-                })
-                .collect(Collectors.toSet());
-    
-        bill.setBillProducts(billProducts);
-        return billRepository.save(bill);
+        try {
+            // Retrieve the order by ID
+            Order order = orderService.getOrderById(orderId);
+            if (order == null) {
+                logger.error("Order with ID {} not found", orderId);
+                throw new IllegalArgumentException("Order not found");
+            }
+
+            // Set order as converted to bill
+            order.setIsConvertedToBill(true);
+
+            // Create a new bill
+            Bill bill = new Bill();
+            bill.setOrder(order);
+            bill.setBillDate(new Date());
+            bill.setTotalAmount(order.getTotalAmount());
+            bill.setUser(order.getUser());
+            bill.setPaymentMethod(paymentMethod);
+            bill.setPaid(false);  // Set initial state as unpaid
+            
+            // Create BillProduct entities from the order's products
+            Set<BillProduct> billProducts = order.getOrderProducts() != null ? 
+                order.getOrderProducts().stream()
+                    .map(orderProduct -> {
+                        BillProduct billProduct = new BillProduct();
+                        billProduct.setBill(bill);
+                        billProduct.setProduct(orderProduct.getProduct());
+                        billProduct.setQuantity(orderProduct.getQuantity());
+                        return billProduct;
+                    })
+                    .collect(Collectors.toSet()) : new HashSet<>();
+            
+            bill.setBillProducts(billProducts);
+            return billRepository.save(bill);
+        } catch (Exception e) {
+            logger.error("Error converting order to bill: {}", e.getMessage());
+            throw e; // Rethrow the exception to handle it upstream
+        }
     }
 
     @Transactional
@@ -62,7 +83,6 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new BillNotFoundException(id));
     }
     
-
     @Transactional
     @Override
     public List<Bill> getAllBills() {

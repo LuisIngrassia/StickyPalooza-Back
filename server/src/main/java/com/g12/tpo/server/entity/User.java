@@ -40,7 +40,7 @@ public class User implements UserDetails {
     private List<Order> orders;
 
     @OneToMany(mappedBy = "user")
-    private List<Bill> bills;
+    private List<Bill> bills; // Correctly allows multiple bills per user
 
     @OneToOne(mappedBy = "user")
     private Cart cart;

@@ -15,4 +15,5 @@ public class OrderDTO {
     private Date orderDate;
     private List<OrderProductDTO> orderProducts;
     private BigDecimal totalAmount;
+    private boolean isConvertedToBill;
 }

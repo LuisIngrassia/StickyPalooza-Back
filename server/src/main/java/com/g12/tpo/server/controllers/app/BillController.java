@@ -1,7 +1,6 @@
 package com.g12.tpo.server.controllers.app;
 
 import java.util.List;
-//import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,9 @@ import com.g12.tpo.server.dto.BillDTO;
 import com.g12.tpo.server.dto.BillProductDTO;
 import com.g12.tpo.server.entity.Bill;
 import com.g12.tpo.server.entity.BillProduct;
-//import com.g12.tpo.server.entity.Order;
 import com.g12.tpo.server.entity.PaymentMethod;
-//import com.g12.tpo.server.entity.Product;
 import com.g12.tpo.server.service.interfaces.BillService;
-//mport com.g12.tpo.server.service.interfaces.OrderService;
-//import com.g12.tpo.server.repository.ProductRepository;
+
 @RestController
 @RequestMapping("/bills")
 @CrossOrigin(origins = "http://localhost:5173")

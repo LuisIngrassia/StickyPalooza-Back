@@ -36,6 +36,8 @@ public class Order {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
+    private Boolean isConvertedToBill;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,4 +50,5 @@ public class Order {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
