@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
 
-    private final String UPLOAD_DIR = "../client/public/images"; 
+    private final String UPLOAD_DIR = "src/main/resources/static/uploads"; 
 
     @Override
     public String uploadImage(MultipartFile file) throws IOException {
@@ -33,6 +33,6 @@ public class FileUploadServiceImpl implements FileUploadService {
         Path filePath = Paths.get(UPLOAD_DIR, newFileName);
         Files.copy(file.getInputStream(), filePath);
 
-        return newFileName; 
+        return "/uploads/" + newFileName; 
     }
 }
