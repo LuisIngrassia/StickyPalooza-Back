@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.g12.tpo.server.dto.OrderDTO;
+import com.g12.tpo.server.dto.OrderProductDTO;
 import com.g12.tpo.server.entity.Cart;
 import com.g12.tpo.server.entity.CartProduct;
 import com.g12.tpo.server.entity.Order;
@@ -22,7 +23,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -40,46 +40,55 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CartRepository cartRepository;
 
-    @Transactional
-    @Override
-    public Order createOrder(OrderDTO orderDTO) {
-        
-        User user = userService.getUserById(orderDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+@Transactional
+@Override
+public Order createOrder(OrderDTO orderDTO) {
+    
+    // Retrieve user by userId from the orderDTO
+    User user = userService.getUserById(orderDTO.getUserId())
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        BigDecimal totalAmount = BigDecimal.ZERO;
+    // Initialize totalAmount to zero
+    BigDecimal totalAmount = BigDecimal.ZERO;
 
-        Order order = Order.builder()
-                .user(user)
-                .orderDate(new Date())
-                .orderProducts(new HashSet<>())
-                .totalAmount(totalAmount)
+    // Create a new Order entity with the user and set the date
+    Order order = Order.builder()
+            .user(user)
+            .orderDate(new Date())
+            .orderProducts(new HashSet<>()) // Initialize the orderProducts collection
+            .totalAmount(totalAmount)
+            .build();
+
+    // Iterate over the list of OrderProductDTOs
+    for (OrderProductDTO orderProductDTO : orderDTO.getOrderProducts()) {
+        Long productId = orderProductDTO.getProductId();
+        Integer quantity = orderProductDTO.getQuantity();
+
+        // Fetch the product from the repository using the productId
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Create an OrderProduct entity with the order, product, and quantity
+        OrderProduct orderProduct = OrderProduct.builder()
+                .order(order)
+                .product(product)
+                .quantity(quantity)
                 .build();
 
-        for (Map.Entry<Long, Integer> entry : orderDTO.getProductQuantities().entrySet()) {
-            Long productId = entry.getKey();
-            Integer quantity = entry.getValue();
+        // Add the orderProduct to the order's set of orderProducts
+        order.getOrderProducts().add(orderProduct);
 
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-
-            OrderProduct orderProduct = OrderProduct.builder()
-                    .order(order)  // The order should be set before adding to the collection
-                    .product(product)
-                    .quantity(quantity)
-                    .build();
-
-            // Add to the order's set of orderProducts
-            order.getOrderProducts().add(orderProduct);
-
-            // Calculate total amount
-            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
-        }
-
-        // Set total amount and save the order
-        order.setTotalAmount(totalAmount);
-        return orderRepository.save(order);
+        // Accumulate the total price for this product based on its price and quantity
+        totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
     }
+
+    // Set the totalAmount for the order before saving
+    order.setTotalAmount(totalAmount);
+
+    // Persist the order and return it
+    return orderRepository.save(order);
+}
+
 
     @Transactional
     @Override

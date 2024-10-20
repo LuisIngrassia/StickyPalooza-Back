@@ -1,6 +1,7 @@
 package com.g12.tpo.server.controllers.app;
 
 import com.g12.tpo.server.dto.OrderDTO;
+import com.g12.tpo.server.dto.OrderProductDTO;
 import com.g12.tpo.server.entity.Order;
 import com.g12.tpo.server.entity.OrderProduct;
 import com.g12.tpo.server.service.interfaces.OrderService;
@@ -11,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,22 +22,32 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    private OrderProductDTO convertToOrderProductDTO(OrderProduct orderProduct) {
+        return OrderProductDTO.builder()
+            .id(orderProduct.getId())
+            .orderId(orderProduct.getOrder().getId())
+            .productId(orderProduct.getProduct().getId())
+            .quantity(orderProduct.getQuantity())
+            .productPrice(orderProduct.getProduct().getPrice())
+            .productName(orderProduct.getProduct().getName())
+            .productImage(orderProduct.getProduct().getImage())
+            .build();
+    }
+    
     private OrderDTO convertToDTO(Order order) {
-
-        Map<Long, Integer> productQuantities = order.getOrderProducts().stream()
-            .collect(Collectors.toMap(
-                op -> op.getProduct().getId(),
-                OrderProduct::getQuantity
-            ));
-
+        List<OrderProductDTO> orderProducts = order.getOrderProducts().stream()
+            .map(this::convertToOrderProductDTO)
+            .collect(Collectors.toList());
+    
         return OrderDTO.builder()
             .id(order.getId())
             .userId(order.getUser() != null ? order.getUser().getId() : null)
             .orderDate(order.getOrderDate())
-            .productQuantities(productQuantities)
+            .orderProducts(orderProducts)  // Similar to cartProducts in CartDTO
             .totalAmount(order.getTotalAmount())
             .build();
     }
+    
 
     @PostMapping("/fromCart/{cartId}")
     @PreAuthorize("hasAuthority('USER')")
@@ -72,7 +82,6 @@ public class OrderController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(orderDTOs);
     }
-
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")

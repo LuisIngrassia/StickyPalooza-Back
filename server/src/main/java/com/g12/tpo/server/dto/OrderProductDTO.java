@@ -13,5 +13,7 @@ public class OrderProductDTO {
     private Long productId;
     private int quantity;
     private BigDecimal productPrice;
+    private String productName;
+    private String productImage;  
 }
 
