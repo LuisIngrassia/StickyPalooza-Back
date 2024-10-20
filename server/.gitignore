@@ -38,7 +38,7 @@ build/
 application.properties
 
 # Ignore static images
-/server/src/main/resources/static/uploads/
+./server/src/main/resources/static/uploads/
 
 # spring.application.name=server
 # server.port=5000

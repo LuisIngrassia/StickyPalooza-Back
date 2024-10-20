@@ -13,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("classpath:/static/uploads/");
+                // .addResourceLocations("classpath:/static/uploads/");
+                .addResourceLocations("file:/home/tomas/StickyPalooza-Back/server/src/main/resources/static/uploads/");
     }
 }
