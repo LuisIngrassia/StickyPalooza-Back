@@ -135,11 +135,12 @@ public Order createOrder(OrderDTO orderDTO) {
         return savedOrder;
     }
     
+    @Transactional
     @Override
     public Order getOrderById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-    }
+    }    
 
     @Override
     public List<Order> getAllOrders() {

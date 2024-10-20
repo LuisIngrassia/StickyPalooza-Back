@@ -43,10 +43,12 @@ public class OrderController {
             .id(order.getId())
             .userId(order.getUser() != null ? order.getUser().getId() : null)
             .orderDate(order.getOrderDate())
-            .orderProducts(orderProducts)  // Similar to cartProducts in CartDTO
+            .orderProducts(orderProducts)
             .totalAmount(order.getTotalAmount())
+            .isConvertedToBill(order.getConvertedToBill())
             .build();
     }
+    
     
 
     @PostMapping("/fromCart/{cartId}")

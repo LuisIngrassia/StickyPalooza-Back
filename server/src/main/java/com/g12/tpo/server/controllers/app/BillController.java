@@ -26,6 +26,7 @@ public class BillController {
     // Convert Bill entity to BillDTO
     private BillDTO convertToDTO(Bill bill) {
         return BillDTO.builder()
+                .id(bill.getId())
                 .orderId(bill.getOrder().getId())  
                 .userId(bill.getUser().getId())
                 .billDate(bill.getBillDate())

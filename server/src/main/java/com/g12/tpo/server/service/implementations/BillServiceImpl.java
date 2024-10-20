@@ -45,7 +45,7 @@ public class BillServiceImpl implements BillService {
             }
 
             // Set order as converted to bill
-            order.setIsConvertedToBill(true);
+            order.setConvertedToBill(true);
 
             // Create a new bill
             Bill bill = new Bill();

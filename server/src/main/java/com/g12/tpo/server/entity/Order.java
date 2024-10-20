@@ -36,7 +36,12 @@ public class Order {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
-    private Boolean isConvertedToBill;
+    @Column(name = "is_converted_to_bill")
+    private Boolean convertedToBill;
+
+    public Boolean getConvertedToBill() {
+        return convertedToBill != null && convertedToBill; // Ensure proper conversion
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Builder
 public class BillDTO {
+    private long id;
     private Long orderId;
     private Long userId;
     private Date billDate;
