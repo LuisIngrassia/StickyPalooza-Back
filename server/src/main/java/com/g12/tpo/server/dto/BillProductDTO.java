@@ -13,5 +13,6 @@ public class BillProductDTO {
     private Long productId;
     private int quantity;
     private BigDecimal productPrice;
+    private String productName;
 }
 

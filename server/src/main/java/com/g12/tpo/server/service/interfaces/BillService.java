@@ -8,5 +8,6 @@ public interface BillService {
     Bill convertOrderToBill(Long orderId, PaymentMethod paymentMethod);
     Bill getBillById(Long id);
     List<Bill> getAllBills();
-    void deleteBill(Long id);
+    List<Bill> getBillsByUserId(Long userId);
+    boolean isValidPaymentMethod(String paymentMethod); 
 }

@@ -38,8 +38,8 @@ public class BillServiceImpl implements BillService {
         bill.setBillDate(new Date());
         bill.setTotalAmount(order.getTotalAmount());
         bill.setUser(order.getUser());
-    
         bill.setPaymentMethod(paymentMethod);
+        bill.setPaid(false);  // Set initial state as unpaid
     
         Set<BillProduct> billProducts = order.getOrderProducts().stream()
                 .map(orderProduct -> {
@@ -69,9 +69,17 @@ public class BillServiceImpl implements BillService {
         return billRepository.findAll();
     }
     
-
     @Override
-    public void deleteBill(Long id) {
-        billRepository.deleteById(id);
+    public List<Bill> getBillsByUserId(Long userId) {
+        return billRepository.findByUserId(userId);
+    }
+
+    public boolean isValidPaymentMethod(String paymentMethod) {
+        try {
+            PaymentMethod.valueOf(paymentMethod.toUpperCase());
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

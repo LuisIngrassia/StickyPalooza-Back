@@ -11,8 +11,6 @@ import com.g12.tpo.server.entity.Bill;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
 
-    // Corrigiendo la referencia a la entidad Bill en lugar de la tabla bills
-    @Query("select b from Bill b where b.user.id = ?1")
     List<Bill> findByUserId(Long userId);
 
     @Query("select b from Bill b where b.totalAmount > ?1")

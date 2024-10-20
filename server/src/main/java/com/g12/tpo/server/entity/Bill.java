@@ -17,7 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,7 +41,7 @@ public class Bill {
     @Column(name = "bill_date", nullable = false)
     private Date billDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -55,6 +54,9 @@ public class Bill {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = true)
     private PaymentMethod paymentMethod;
+
+    @Column(name = "is_paid", nullable = false)
+    private boolean isPaid;  
 
     @Override
     public boolean equals(Object o) {
