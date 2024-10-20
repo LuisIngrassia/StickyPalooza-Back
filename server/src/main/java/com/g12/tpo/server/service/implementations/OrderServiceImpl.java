@@ -137,6 +137,12 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll();
     }
 
+    @Override
+    public List<Order> getOrdersByUserId(Long userId) {
+        return orderRepository.findByUserId(userId);
+    }
+
+
     @Transactional
     @Override
     public void deleteOrder(Long id) {

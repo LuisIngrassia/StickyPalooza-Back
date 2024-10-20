@@ -23,6 +23,7 @@ public class OrderController {
     private OrderService orderService;
 
     private OrderDTO convertToDTO(Order order) {
+
         Map<Long, Integer> productQuantities = order.getOrderProducts().stream()
             .collect(Collectors.toMap(
                 op -> op.getProduct().getId(),
@@ -61,6 +62,17 @@ public class OrderController {
                                        .collect(Collectors.toList());
         return ResponseEntity.ok(orderDTOs);
     }
+
+    @GetMapping("/ordersFromUser/{userId}")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<List<OrderDTO>> getOrdersByUserId(@PathVariable Long userId) {
+        List<Order> orders = orderService.getOrdersByUserId(userId);
+        List<OrderDTO> orderDTOs = orders.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(orderDTOs);
+    }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")

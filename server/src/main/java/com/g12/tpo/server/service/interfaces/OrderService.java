@@ -10,5 +10,6 @@ public interface OrderService {
     Order createOrderFromCart(Long cartId);
     Order getOrderById(Long id);
     List<Order> getAllOrders();
+    List<Order> getOrdersByUserId(Long userId);
     void deleteOrder(Long id);
 }
