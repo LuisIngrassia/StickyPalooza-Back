@@ -37,6 +37,9 @@ build/
 # Ignore application.properties
 application.properties
 
+# Ignore static images
+/server/src/main/resources/static/uploads/
+
 # spring.application.name=server
 # server.port=5000
 # spring.datasource.url=jdbc:mysql://localhost:3306/MARKETPLACE

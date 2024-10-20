@@ -1,6 +1,7 @@
-package com.g12.tpo.server.controllers.config; // Ensure this matches your directory structure
+package com.g12.tpo.server.controllers.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,9 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void addResourceHandlers(@SuppressWarnings("null") ResourceHandlerRegistry registry) {
-
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("classpath:/static/uploads/"); 
+                .addResourceLocations("classpath:/static/uploads/");
     }
 }
