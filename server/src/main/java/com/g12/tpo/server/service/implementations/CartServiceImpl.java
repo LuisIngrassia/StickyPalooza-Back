@@ -109,6 +109,32 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart); 
     }    
     
+    @Transactional
+    public void removeProductFromCart(Long cartId, Long productId) {
+        // Fetch the cart
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
+        // Find the CartProduct associated with the given productId
+        CartProduct cartProduct = cart.getCartProducts().stream()
+                .filter(cp -> cp.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Product not found in the cart"));
+
+        // Restore the product stock
+        Product product = cartProduct.getProduct();
+        product.setStockQuantity(product.getStockQuantity() + cartProduct.getQuantity());
+        productRepository.save(product);
+
+        // Remove the CartProduct from the cart
+        cart.getCartProducts().remove(cartProduct);
+
+        // Save the updated cart
+        cartRepository.save(cart);
+    }
+
+
+
     @Override
     public void deleteCart(Long id) {
         Cart cart = getCartById(id);
