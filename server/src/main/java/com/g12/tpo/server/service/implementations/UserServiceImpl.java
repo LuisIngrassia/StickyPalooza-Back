@@ -40,12 +40,12 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
         } else {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("Email changed, you need to login again.");
         }
     }
 
     @Override
-public User updateUser(Long id, User updatedUser) {
+    public User updateUser(Long id, User updatedUser) {
     return userRepository.findById(id).map(user -> {
         if (updatedUser.getEmail() != null) {
             user.setEmail(updatedUser.getEmail());
@@ -69,8 +69,7 @@ public User updateUser(Long id, User updatedUser) {
         }
 
         return userRepository.save(user);
-    }).orElseThrow(() -> new RuntimeException("User not found"));
+    }).orElseThrow(() -> new RuntimeException("Email changed, you need to login again."));
 }
 
-    
 }

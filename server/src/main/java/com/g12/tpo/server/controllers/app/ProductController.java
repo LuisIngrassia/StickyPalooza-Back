@@ -131,7 +131,6 @@ public class ProductController {
         return ResponseEntity.ok(convertToDTO(updatedProduct));
     }
     
-    
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
