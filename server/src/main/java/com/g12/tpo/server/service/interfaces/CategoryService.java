@@ -1,5 +1,7 @@
 package com.g12.tpo.server.service.interfaces;
 
+import java.util.List; 
+
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,4 +18,6 @@ public interface CategoryService {
     public Category createCategory(String description) throws CategoryDuplicateException;
 
     public void deleteCategory(Long categoryId);
+    
+    public List<Category> getAllCategories();
 }

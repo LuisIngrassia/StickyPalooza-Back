@@ -1,11 +1,11 @@
 package com.g12.tpo.server.controllers.app;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.g12.tpo.server.dto.CategoryDTO;
@@ -47,16 +46,14 @@ public class CategoriesController {
 
     @GetMapping("/getAll")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Page<CategoryDTO>> getCategories(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        Page<Category> categoriesPage = (page == null || size == null) ?
-                categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)) :
-                categoryService.getCategories(PageRequest.of(page, size));
-        
-        Page<CategoryDTO> categoryDTOsPage = categoriesPage.map(this::convertToDTO);
-        return ResponseEntity.ok(categoryDTOsPage);
+    public ResponseEntity<List<CategoryDTO>> getCategories() {
+        List<Category> categoriesList = categoryService.getAllCategories();
+        List<CategoryDTO> categoryDTOs = categoriesList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(categoryDTOs);
     }
+
 
     @GetMapping("/{categoryId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
