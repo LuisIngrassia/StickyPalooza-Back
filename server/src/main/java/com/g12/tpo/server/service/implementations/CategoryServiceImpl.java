@@ -9,6 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.g12.tpo.server.service.interfaces.CategoryService;
+
+import jakarta.transaction.Transactional;
+
 import com.g12.tpo.server.entity.Category;
 import com.g12.tpo.server.exceptions.CategoryDuplicateException;
 import com.g12.tpo.server.repository.CategoryRepository;
@@ -47,5 +50,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    @Override
+    @Transactional 
+    public Category updateCategory(Category category) {
+        
+        if (!categoryRepository.existsById(category.getId())) {
+            throw new RuntimeException("Category not found");
+        }
+        
+        return categoryRepository.save(category);
     }
 }

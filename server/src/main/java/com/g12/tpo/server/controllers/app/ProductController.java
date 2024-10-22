@@ -41,6 +41,7 @@ public class ProductController {
             .price(product.getPrice())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+            .categoryDescription(product.getCategory() != null ? product.getCategory().getDescription() : null)
             .image(product.getImage())
             .build();
     }

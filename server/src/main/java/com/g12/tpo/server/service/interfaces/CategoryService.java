@@ -20,4 +20,6 @@ public interface CategoryService {
     public void deleteCategory(Long categoryId);
     
     public List<Category> getAllCategories();
+
+    public Category updateCategory(Category category);
 }
