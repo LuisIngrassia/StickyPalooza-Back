@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/bills/**").authenticated()
                 .requestMatchers("/orders/**").authenticated()
                 .requestMatchers("/users/**").authenticated()
-                .requestMatchers("/contact/**").permitAll()
+                .requestMatchers("/contact/**").authenticated()
                 )
 
 

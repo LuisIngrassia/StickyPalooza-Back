@@ -15,7 +15,6 @@ public interface ContactService {
 
     Contact updateContact(Long id, ContactDTO contactDTO);
 
-
     void deleteContact(Long id);
 
     List<Contact> getContactsByProblemType(String problemType);
