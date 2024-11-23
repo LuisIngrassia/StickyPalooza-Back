@@ -27,10 +27,16 @@ public class Product {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "original_price", nullable = false)
+    private BigDecimal originalPrice;
+
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "image") 
+    @Column(name = "discount_percentage", nullable = false)
+    private BigDecimal discountPercentage = BigDecimal.ZERO; // Default to 0%
+
+    @Column(name = "image")
     private String image;
 
     @ManyToOne
@@ -40,5 +46,15 @@ public class Product {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
 
-    //ADD DISCOUNT ENTITY
+    public void applyDiscount(BigDecimal discountPercentage) {
+        this.discountPercentage = discountPercentage != null ? discountPercentage : BigDecimal.ZERO;
+
+        if (this.discountPercentage.compareTo(BigDecimal.ZERO) > 0) {
+            this.price = originalPrice.subtract(
+                originalPrice.multiply(discountPercentage).divide(BigDecimal.valueOf(100))
+            );
+        } else {
+            this.price = originalPrice;
+        }
+    }
 }

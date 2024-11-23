@@ -20,9 +20,9 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public Product createProduct(Product product, String imagePath) { // Accept image path as String
+    public Product createProduct(Product product, String imagePath) {
         if (imagePath != null && !imagePath.isEmpty()) {
-            product.setImage(imagePath); // Set the image path directly
+            product.setImage(imagePath);
         }
         return productRepository.save(product);
     }
@@ -40,22 +40,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product updateProduct(Long id, Product productDetails, String imagePath) { // Accept image path as String
+    public Product updateProduct(Long id, Product productDetails, String imagePath) {
         Product product = getProductById(id);
-
+    
         Optional.ofNullable(productDetails.getName()).ifPresent(product::setName);
         Optional.ofNullable(productDetails.getDescription()).ifPresent(product::setDescription);
-        Optional.ofNullable(productDetails.getPrice()).ifPresent(product::setPrice);
-        Optional.ofNullable(productDetails.getCategory()).ifPresent(product::setCategory);
         Optional.ofNullable(productDetails.getStockQuantity()).ifPresent(product::setStockQuantity);
-
-        if (imagePath != null && !imagePath.isEmpty()) {
-            product.setImage(imagePath); 
+        Optional.ofNullable(productDetails.getCategory()).ifPresent(product::setCategory);
+    
+        if (productDetails.getDiscountPercentage() != BigDecimal.ZERO) {
+            product.applyDiscount(productDetails.getDiscountPercentage());
         }
-
+    
+        if (imagePath != null && !imagePath.isEmpty()) {
+            product.setImage(imagePath);
+        }
+    
         return productRepository.save(product);
     }
-
+    
     @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {

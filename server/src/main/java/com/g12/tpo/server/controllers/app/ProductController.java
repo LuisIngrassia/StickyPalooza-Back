@@ -39,12 +39,14 @@ public class ProductController {
             .name(product.getName())
             .description(product.getDescription())
             .price(product.getPrice())
+            .discountPercentage(product.getDiscountPercentage())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
             .categoryDescription(product.getCategory() != null ? product.getCategory().getDescription() : null)
             .image(product.getImage())
             .build();
     }
+    
 
     @GetMapping
     @PreAuthorize("permitAll()")
@@ -101,6 +103,7 @@ public class ProductController {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "price", required = false) BigDecimal price,
+            @RequestParam(value = "discountPercentage", required = false) BigDecimal discountPercentage,
             @RequestParam(value = "stockQuantity", required = false) Integer stockQuantity,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "image", required = false) MultipartFile image) {
@@ -109,9 +112,10 @@ public class ProductController {
     
         if (name != null) productDetails.setName(name);
         if (description != null) productDetails.setDescription(description);
-        if (price != null) productDetails.setPrice(price);
+        if (price != null) productDetails.setOriginalPrice(price);
+        if (discountPercentage != null) productDetails.applyDiscount(discountPercentage);
         if (stockQuantity != null) productDetails.setStockQuantity(stockQuantity);
-        
+    
         if (categoryId != null) {
             Category category = categoryService.getCategoryById(categoryId)
                     .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -130,7 +134,7 @@ public class ProductController {
         Product updatedProduct = productService.updateProduct(id, productDetails, productDetails.getImage());
     
         return ResponseEntity.ok(convertToDTO(updatedProduct));
-    }
+    }    
     
 
     @DeleteMapping("/{id}")
