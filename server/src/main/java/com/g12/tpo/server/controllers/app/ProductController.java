@@ -39,6 +39,7 @@ public class ProductController {
             .name(product.getName())
             .description(product.getDescription())
             .price(product.getPrice())
+            .originalPrice(product.getOriginalPrice())
             .discountPercentage(product.getDiscountPercentage())
             .stockQuantity(product.getStockQuantity())
             .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
