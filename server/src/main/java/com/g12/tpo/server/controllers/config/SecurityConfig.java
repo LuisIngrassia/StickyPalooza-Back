@@ -47,7 +47,10 @@ public class SecurityConfig {
                 .requestMatchers("/products/**").permitAll()
                 .requestMatchers("/bills/**").authenticated()
                 .requestMatchers("/orders/**").authenticated()
-                .requestMatchers("/users/**").authenticated())
+                .requestMatchers("/users/**").authenticated()
+                .requestMatchers("/contact/**").authenticated()
+                )
+
 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider) // Keep custom provider
