@@ -3,7 +3,6 @@ package com.g12.tpo.server.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
 
 @Builder
 @Data
@@ -12,5 +11,4 @@ public class ContactDTO {
     private String fullName;
     private String problemType;
     private String description;
-    private List<String> photoUrls; 
 }

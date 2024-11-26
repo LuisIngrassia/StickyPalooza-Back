@@ -37,7 +37,6 @@ public class ContactController {
                 .fullName(contact.getFullName())
                 .problemType(contact.getProblemType())
                 .description(contact.getDescription())
-                .photoUrls(contact.getPhotoUrls())
                 .build();
         return ResponseEntity.ok(contactDTO);
     }

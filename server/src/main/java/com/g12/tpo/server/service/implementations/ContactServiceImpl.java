@@ -23,7 +23,6 @@ public class ContactServiceImpl implements ContactService{
         contact.setFullName(contactDTO.getFullName());
         contact.setProblemType(contactDTO.getProblemType());
         contact.setDescription(contactDTO.getDescription());
-        contact.setPhotoUrls(contactDTO.getPhotoUrls());
         return contactRepository.save(contact);
     }
 
@@ -43,7 +42,6 @@ public class ContactServiceImpl implements ContactService{
         Optional.ofNullable(contactDTO.getFullName()).ifPresent(contact::setFullName); 
         Optional.ofNullable(contactDTO.getProblemType()).ifPresent(contact::setProblemType); 
         Optional.ofNullable(contactDTO.getDescription()).ifPresent(contact::setDescription); 
-        Optional.ofNullable(contactDTO.getPhotoUrls()).ifPresent(contact::setPhotoUrls); 
         return contactRepository.save(contact); 
     } 
     
